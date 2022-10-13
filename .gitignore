@@ -1,0 +1,10 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+.idea
+*.txt
+!requirements.txt
+*.json
+*.db
+**/__pycache__
+/components/
