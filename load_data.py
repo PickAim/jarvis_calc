@@ -85,4 +85,5 @@ def load(text: str, update: bool = False, pages_num: int = -1):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(get_all_product_niche(text, abspath(constants.data_path), pages_num))
+        loop.close()
 
