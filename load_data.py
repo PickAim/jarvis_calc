@@ -76,6 +76,7 @@ async def get_all_product_niche(text: str, output_dir: str, pages_num: int):
 
 def load(text: str, update: bool = False, pages_num: int = -1):
     only_files = []
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     if exists(constants.data_path):
         only_files = [f.split('.')[0] for f in listdir(
             constants.data_path) if isfile(join(constants.data_path, f))]
