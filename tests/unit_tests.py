@@ -20,8 +20,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(len(x), n_samples + 1)
 
     def test_load_storage(self):
-        text = ['26414401', '6170053']
-        storage_data = get_storage_data(text)
+        product_ids = [26414401, 6170053]
+        storage_data: dict[int, dict[int, int]] = get_storage_data(product_ids)
         self.assertIsNotNone(storage_data)
         self.assertEqual(2, len(storage_data.keys()))
 
@@ -50,9 +50,9 @@ class MyTestCase(unittest.TestCase):
         load(text_to_search, constants.data_path, is_update, pages_num)
         print(time.time() - start_time)
         filename = str(join(constants.data_path, text_to_search + ".txt"))
-        cost_data = load_data(filename)
-        n_samples = int(len(cost_data) * 0.1)  # todo think about number of samples
-        x, y = get_frequency_stats(cost_data, n_samples + 1)
+        loaded_cost_data = load_data(filename)
+        n_samples = int(len(loaded_cost_data) * 0.1)  # todo think about number of samples
+        x, y = get_frequency_stats(loaded_cost_data, n_samples + 1)
         self.assertEqual(len(x), n_samples + 1)
 
 

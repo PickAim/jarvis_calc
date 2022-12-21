@@ -1,12 +1,12 @@
 import numpy as np
 
 
-def frequency_calc(costs: np.array, n_samples: int):
+def frequency_calc(costs: list[float], n_samples: int) -> tuple[list[float], list[int]]:
     res = np.histogram(costs, n_samples)
     return list(res[1][1:]), list(res[0])
 
 
-def get_mean(lst: list[int]) -> int:
+def get_cleared_mean(lst: list[int]) -> int:
     result = 0
     clear_frequency = np.array([x for x in lst if x != 0])
     for freq in clear_frequency:
@@ -14,43 +14,40 @@ def get_mean(lst: list[int]) -> int:
     return int(result)
 
 
-def get_frequency_stats(cost_data: list[float], n_samples: int) -> tuple[list[float], list[float]]:
+def get_frequency_stats(cost_data: list[float], n_samples: int) -> tuple[list[float], list[int]]:
     if len(cost_data) <= 0:
         return [], []
     cost_data.sort()
-    cost_data = np.array(cost_data)
-    base_keys, base_frequency = frequency_calc(cost_data, n_samples)
+    base_keys, base_frequencies = frequency_calc(cost_data, n_samples)
     keys = base_keys.copy()
-    frequency = base_frequency.copy()
-    math_ozh = get_mean(frequency)
+    frequencies = base_frequencies.copy()
+    math_ozh: int = get_cleared_mean(frequencies)
     interesting_part_ind = len(keys)//3
-    if len(frequency) < 2:
-        return keys, frequency
-    while frequency[interesting_part_ind] > math_ozh//2 and interesting_part_ind < len(frequency):  # todo
+    if len(frequencies) < 2:
+        return keys, frequencies
+    while frequencies[interesting_part_ind] > math_ozh//2 and interesting_part_ind < len(frequencies):  # todo
         interesting_part_ind += 1
     while True:
-        if 0 < interesting_part_ind < len(frequency):
+        if 0 < interesting_part_ind < len(frequencies):
             right_key = keys[interesting_part_ind]
-            sum = 0
-            for i in range(interesting_part_ind, len(frequency)):
-                sum += frequency[i]
-            right_frequency = sum
-            left_costs = []
+            right_frequency: int = 0
+            for i in range(interesting_part_ind, len(frequencies)):
+                right_frequency += frequencies[i]
+            left_costs: list[float] = []
             for cost in cost_data:
                 if cost < keys[interesting_part_ind - 1]:
                     left_costs.append(cost)
                 else:
                     break
-            keys, frequency = frequency_calc(
-                np.array(left_costs), n_samples - 1)
+            keys, frequencies = frequency_calc(left_costs, n_samples - 1)
             keys.append(right_key)
-            frequency.append(right_frequency)
-            if right_frequency > get_mean(frequency):
+            frequencies.append(right_frequency)
+            if right_frequency > get_cleared_mean(frequencies):
                 interesting_part_ind += 1
-                frequency = base_frequency
+                frequencies = base_frequencies
                 keys = base_keys
             else:
                 break
         else:
             break
-    return keys, frequency
+    return keys, frequencies
