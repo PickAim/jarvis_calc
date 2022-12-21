@@ -2,11 +2,12 @@ import requests
 
 from os.path import exists
 from os import mkdir
-from . import constants
 from os.path import abspath
 from os import listdir
 from os.path import isfile, join
 from datetime import datetime, timedelta
+
+import jarvis_calc.constants as constants
 import aiohttp
 import asyncio
 
