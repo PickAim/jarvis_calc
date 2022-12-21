@@ -1,18 +1,20 @@
+from asyncio import AbstractEventLoop, Task
+
 import requests
 
 from os.path import exists
 from os import mkdir
-from os.path import abspath
 from os import listdir
 from os.path import isfile, join
 from datetime import datetime, timedelta
 
-import jarvis_calc.constants as constants
 import aiohttp
 import asyncio
 
+from requests import Response, Session
 
-async def get_page_data(session, data):
+
+async def get_page_data(session, data) -> list[float]:
     avr_mass = []
     url = 'https://wbx-content-v2.wbstatic.net/price-history/'+str(data)+'.json?'
     async with session.get(url=url) as request:
@@ -36,16 +38,16 @@ async def get_page_data(session, data):
         return avr_mass
 
 
-async def get_all_product_niche(text: str, output_dir: str, pages_num: int):
-    iterator_page = 1
-    temp_mass = []
-    mass = []
-    session = requests.Session()
+async def load_all_product_niche(text: str, output_dir: str, pages_num: int) -> None:
+    iterator_page: int = 1
+    temp_mass: list[str] = []
+    mass: list[tuple[str, int]] = []
+    session: Session = requests.Session()
     while True:
-        uri = f'https://search.wb.ru/exactmatch/ru/common/v4/search?appType=1&couponsGeo=2,12,7,3,6,21,16' \
+        uri: str = f'https://search.wb.ru/exactmatch/ru/common/v4/search?appType=1&couponsGeo=2,12,7,3,6,21,16' \
               f'&curr=rub&dest=-1221148,-140294,-1751445,-364763&emp=0&lang=ru&locale=ru&pricemarginCoeff=1.0' \
               f'&query={text}&resultset=catalog&sort=popular&spp=0&suppressSpellcheck=false&page={str(iterator_page)}'
-        request = session.get(
+        request: Response = session.get(
             uri
         )
         json_code = request.json()
@@ -58,13 +60,13 @@ async def get_all_product_niche(text: str, output_dir: str, pages_num: int):
         if pages_num != -1 and iterator_page > pages_num:
             break
     session.close()
-    async with aiohttp.ClientSession() as session:
-        tasks = []
+    async with aiohttp.ClientSession() as clientSession:
+        tasks: list[Task] = []
         for data in mass:
-            task = asyncio.create_task(get_page_data(session, data[1]))
+            task = asyncio.create_task(get_page_data(clientSession, data[1]))
             tasks.append(task)
-        avr_collection = await asyncio.gather(*tasks)
-        j = 0
+        avr_collection: any = await asyncio.gather(*tasks)
+        j: int = 0
         with open(join(output_dir, text + ".txt"), 'w', encoding='utf-8') as f:
             for avr_mass in avr_collection:
                 for i in range(len(avr_mass)):
@@ -72,20 +74,18 @@ async def get_all_product_niche(text: str, output_dir: str, pages_num: int):
                         f.write("\n")
                     j += 1
                     f.write(str(avr_mass[i]) + ",")
-    await session.close()
+    await clientSession.close()
 
 
-def load(text: str, update: bool = False, pages_num: int = -1):
-    only_files = []
+def load(text: str, output_dir: str, update: bool = False, pages_num: int = -1) -> None:
+    only_files: list[str] = []
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    if exists(constants.data_path):
-        only_files = [f.split('.')[0] for f in listdir(
-            constants.data_path) if isfile(join(constants.data_path, f))]
+    if exists(output_dir):
+        only_files = [f.split('.')[0] for f in listdir(output_dir) if isfile(join(output_dir, f))]
     else:
-        mkdir(constants.data_path)
+        mkdir(output_dir)
     if not (text in only_files) or update:
-        loop = asyncio.new_event_loop()
+        loop: AbstractEventLoop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.run_until_complete(get_all_product_niche(text, abspath(constants.data_path), pages_num))
+        loop.run_until_complete(load_all_product_niche(text, output_dir, pages_num))
         loop.close()
-
