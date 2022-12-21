@@ -11,28 +11,29 @@ from datetime import datetime, timedelta
 import aiohttp
 import asyncio
 
+from aiohttp import ClientSession
 from requests import Response, Session
 
 
-async def get_page_data(session, data) -> list[float]:
-    avr_mass = []
-    url = 'https://wbx-content-v2.wbstatic.net/price-history/'+str(data)+'.json?'
+async def get_page_data(session: ClientSession, product_id: int) -> list[float]:
+    avr_mass: list[float] = []
+    url: str = 'https://wbx-content-v2.wbstatic.net/price-history/'+str(product_id)+'.json?'
     async with session.get(url=url) as request:
-        response_status = request.status
+        response_status: int = request.status
         if response_status != 200:
             pass
         else:
             json_code = await request.json()
-            sum = 0
-            count = 1
+            summary_of_costs: float = 0
+            count: int = 1
+            last_month = datetime.now() - timedelta(days=30)
             for obj in json_code:
                 time_data = datetime.fromtimestamp(obj['dt'])
-                last_month = datetime.now() - timedelta(days=30)
                 if time_data > last_month:
-                    sum += obj['price']['RUB']
+                    summary_of_costs += obj['price']['RUB']
                     count += 1
-            if sum != 0:
-                avr_mass.append(sum / count)
+            if summary_of_costs != 0:
+                avr_mass.append(summary_of_costs / count)
             else:
                 avr_mass.append(json_code[len(json_code) - 1]['price']['RUB'])
         return avr_mass
@@ -41,7 +42,7 @@ async def get_page_data(session, data) -> list[float]:
 async def load_all_product_niche(text: str, output_dir: str, pages_num: int) -> None:
     iterator_page: int = 1
     temp_mass: list[str] = []
-    mass: list[tuple[str, int]] = []
+    name_and_id_list: list[tuple[str, int]] = []
     session: Session = requests.Session()
     while True:
         uri: str = f'https://search.wb.ru/exactmatch/ru/common/v4/search?appType=1&couponsGeo=2,12,7,3,6,21,16' \
@@ -55,15 +56,15 @@ async def load_all_product_niche(text: str, output_dir: str, pages_num: int) -> 
         if 'data' not in json_code:
             break
         for product in json_code['data']['products']:
-            mass.append((product['name'], product['id']))
+            name_and_id_list.append((product['name'], product['id']))  # TODO we collect names - for what?
         iterator_page += 1
         if pages_num != -1 and iterator_page > pages_num:
             break
     session.close()
     async with aiohttp.ClientSession() as clientSession:
         tasks: list[Task] = []
-        for data in mass:
-            task = asyncio.create_task(get_page_data(clientSession, data[1]))
+        for name_and_id in name_and_id_list:
+            task = asyncio.create_task(get_page_data(clientSession, name_and_id[1]))
             tasks.append(task)
         avr_collection: any = await asyncio.gather(*tasks)
         j: int = 0
