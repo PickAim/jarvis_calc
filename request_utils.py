@@ -2,6 +2,7 @@ import requests
 import aiohttp
 import asyncio
 
+from requests.adapters import HTTPAdapter
 from asyncio import Task
 from aiohttp import ClientSession
 from requests import Response, Session
@@ -11,9 +12,7 @@ from os.path import join
 
 def get_parent():
     session = requests.Session()
-    adapter = requests.adapters.HTTPAdapter(
-        pool_connections=100,
-        pool_maxsize=100)
+    adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
     session.mount('http://', adapter)
     response = session.get('https://suppliers-api.wildberries.ru/content/v1/object/parent/all',
                            headers={
@@ -31,9 +30,7 @@ def get_parent():
 def get_object_name(text : str):
     object_name_list = []
     session = requests.Session()
-    adapter = requests.adapters.HTTPAdapter(
-        pool_connections=100,
-        pool_maxsize=100)
+    adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
     session.mount('http://', adapter)
     response = session.get('https://suppliers-api.wildberries.ru/content/v1/object/all?name=' + text
                            +'&top=100',
@@ -110,7 +107,6 @@ async def load_all_product_niche(text: str, output_dir: str, pages_num: int) -> 
     await clientSession.close()
 
 
-
 def get_storage_dict(product_id: int) -> dict[int, int]:
     mass = []
     session = requests.Session()
@@ -129,4 +125,3 @@ def get_storage_dict(product_id: int) -> dict[int, int]:
             warehouse_leftover_dict[data_storage['wh']] = data_storage['qty']
             # TODO think about same name for warehouse, but different leftovers -> it will squash to the last one value
     return warehouse_leftover_dict
-
