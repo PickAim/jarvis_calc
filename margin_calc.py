@@ -1,30 +1,27 @@
 import numpy as np
 
 # now it's just constants
-commission = 0.1
-logistic_price = 55
-storage_price = 0.04
-wrep = 45
+commission: float = 0.1
+logistic_price: int = 55
+storage_price: float = 0.04
+wrep: int = 45
 
 
-def all_calc(buy_price, pack_price, mid_cost, transit_price=0.0, unit_count=0.0) -> dict[str: (float, float)]:
-    unit_cost = buy_price + pack_price
-    unit_storage_cost = wrep * storage_price
+def unit_economy_calc(buy_price: int, pack_price: int, mid_cost: int, transit_price: int = 0.0,
+                      unit_count: int = 0.0) -> dict[str: tuple[int, float]]:
+    unit_cost: int = buy_price + pack_price
+    unit_storage_cost: int = int(wrep * storage_price)
 
-    partial_unit_cost = (unit_cost + logistic_price +
-                         unit_storage_cost) * (1 + commission)
+    partial_unit_cost: int = int((unit_cost + logistic_price + unit_storage_cost) * (1 + commission))
+    partial_unit_transit_cost: int = 0
     if unit_count > 0:
-        partial_unit_transit_cost = partial_unit_cost + \
-                                    (transit_price / unit_count) * (1 + commission)
-    else:
-        partial_unit_transit_cost = 0
+        partial_unit_transit_cost = int(partial_unit_cost + (float(transit_price) / unit_count) * (1 + commission))
 
-    margin = (1 - commission) * mid_cost - partial_unit_cost
+    margin: int = int((1 - commission) * mid_cost - partial_unit_cost)
 
+    transit_margin: int = 0
     if unit_count > 0:
-        transit_margin = (1 - commission) * mid_cost - partial_unit_transit_cost
-    else:
-        transit_margin = 0
+        transit_margin = int((1 - commission) * mid_cost - partial_unit_transit_cost)
 
     if margin > 0:
         partial_cost = (unit_cost + logistic_price + margin + unit_storage_cost)
@@ -74,7 +71,7 @@ def get_concurrent_margin(mid_cost, unit_cost, unit_storage_cost):
     return mid_cost - unit_cost - commission * mid_cost - logistic_price - unit_storage_cost
 
 
-def get_mean(cost_data: np.array, buy_price, pack_price, n_samples) -> float:
+def get_mean_concurrent_cost(cost_data: np.array, buy_price, pack_price, n_samples) -> int:
     unit_cost = (buy_price + pack_price) * 100
     unit_storage_cost = (wrep * storage_price) * 100
     keys = []
@@ -86,4 +83,5 @@ def get_mean(cost_data: np.array, buy_price, pack_price, n_samples) -> float:
         concurrent_margin = get_concurrent_margin(cost_data[keys[i-1]:keys[i]].mean(), unit_cost, unit_storage_cost)
         if concurrent_margin > 0:
             return cost_data[keys[i-1]:keys[i]].mean() / 100
-    return cost_data[-2:-1].mean() / 100
+    return int(cost_data[-2:-1].mean() / 100)
+

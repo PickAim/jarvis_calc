@@ -7,4 +7,3 @@ rootpath: str = join(*splitted)
 
 data_path: str = join(rootpath, "data")
 out_path: str = join(rootpath, "out")
-

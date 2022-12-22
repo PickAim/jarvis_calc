@@ -5,11 +5,11 @@ from os.path import join
 import numpy as np
 import constants
 
-from calc import get_frequency_stats
+from calc_utils import get_frequency_stats
 from jarvis_utils import load_data
 from load_data import load
 from load_storage import get_storage_data
-from margin_calc import all_calc, get_mean
+from margin_calc import unit_economy_calc, get_mean_concurrent_cost
 from tests.test_data import cost_data
 
 
@@ -25,7 +25,7 @@ class MyTestCase(unittest.TestCase):
         self.assertIsNotNone(storage_data)
         self.assertEqual(2, len(storage_data.keys()))
 
-    def test_all_calc(self):
+    def test_unit_economy_calc(self):
         niche = 'кофе'
         is_update = False
         pages_num = 1
@@ -37,9 +37,8 @@ class MyTestCase(unittest.TestCase):
         pack = 150
         transit = 0
         unit_count = 0
-        mid_cost = get_mean(costs, buy, pack, 20)
-        result_dict = all_calc(buy, pack, mid_cost, transit,
-                               unit_count)
+        mid_cost = get_mean_concurrent_cost(costs, buy, pack, 20)
+        result_dict = unit_economy_calc(buy, pack, mid_cost, transit, unit_count)
         self.assertTrue(result_dict)
 
     def test_load_n_freq_calc(self):

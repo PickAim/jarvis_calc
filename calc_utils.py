@@ -7,11 +7,11 @@ def frequency_calc(costs: list[float], n_samples: int) -> tuple[list[float], lis
 
 
 def get_cleared_mean(lst: list[int]) -> int:
-    result = 0
+    result: int = 0
     clear_frequency = np.array([x for x in lst if x != 0])
     for freq in clear_frequency:
-        result += freq / len(clear_frequency)
-    return int(result)
+        result += freq
+    return int(result / len(clear_frequency))
 
 
 def get_frequency_stats(cost_data: list[float], n_samples: int) -> tuple[list[float], list[int]]:
@@ -51,3 +51,17 @@ def get_frequency_stats(cost_data: list[float], n_samples: int) -> tuple[list[fl
         else:
             break
     return keys, frequencies
+
+
+def sort_by_len_alphabet(names: list[str]) -> list[str]:
+    length_dict: [int, list[str]] = {}
+    for name in names:
+        if not length_dict.__contains__(len(name)):
+            length_dict[len(name)] = [name]
+            continue
+        length_dict[len(name)].append(name)
+    sorted_tuples: list = sorted(length_dict.items())
+    result: list[str] = []
+    for length_tuple in sorted_tuples:
+        result.extend(sorted(length_tuple[1]))
+    return result
