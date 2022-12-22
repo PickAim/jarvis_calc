@@ -23,47 +23,45 @@ def unit_economy_calc(buy_price: int, pack_price: int, mid_cost: int, transit_pr
     if unit_count > 0:
         transit_margin = int((1 - commission) * mid_cost - partial_unit_transit_cost)
 
+    partial_cost: int = unit_cost + logistic_price + unit_storage_cost
     if margin > 0:
-        partial_cost = (unit_cost + logistic_price + margin + unit_storage_cost)
-    else:
-        partial_cost = (unit_cost + logistic_price + unit_storage_cost)
-    cost = (1 + commission) * partial_cost
+        partial_cost += margin
+    cost: int = int((1 + commission) * partial_cost)
 
+    transit_cost: int = 0
     if unit_count > 0:
-        transit_cost = cost + (transit_price / unit_count) * (1 + commission)
-    else:
-        transit_cost = 0
+        transit_cost = cost + int((float(transit_price) / unit_count) * (1 + commission))
 
-    full_commission = commission * partial_cost
+    full_commission: int = int(commission * partial_cost)
     old_margin = margin
     if margin > 0:
-        margin = margin * (1 - commission)
+        margin = int(margin * (1 - commission))
     else:
-        margin = margin * (1 + commission)
+        margin = int(margin * (1 + commission))
     result = {
-        "Pcost": (buy_price, buy_price / (cost - commission * old_margin)),  # Закупочная себестоимость
-        "Pack": (pack_price, pack_price / (cost - commission * old_margin)),  # Упаковка
-        "Mcomm": (full_commission, full_commission / (cost - commission * old_margin)),  # Комиссия маркетплейса
-        "Log": (logistic_price, logistic_price / (cost - commission * old_margin)),  # Логистика
-        "Store": (unit_storage_cost, unit_storage_cost / (cost - commission * old_margin)),  # Хранение
-        "Margin": (margin, abs(margin) / (cost - commission * old_margin)),  # Маржа
+        "Pcost": (buy_price, float(buy_price) / (cost - commission * old_margin)),  # Закупочная себестоимость
+        "Pack": (pack_price, float(pack_price) / (cost - commission * old_margin)),  # Упаковка
+        "Mcomm": (full_commission, float(full_commission) / (cost - commission * old_margin)),  # Комиссия маркетплейса
+        "Log": (logistic_price, float(logistic_price) / (cost - commission * old_margin)),  # Логистика
+        "Store": (unit_storage_cost, float(unit_storage_cost) / (cost - commission * old_margin)),  # Хранение
+        "Margin": (margin, float(abs(margin)) / (cost - commission * old_margin)),  # Маржа
     }
     if margin > 0:
-        result["Price"] = (cost, unit_cost / (cost - commission * old_margin) * 100
-                           + full_commission / (cost - commission * old_margin) * 100
-                           + logistic_price / (cost - commission * old_margin) * 100
-                           + unit_storage_cost / (cost - commission * old_margin) * 100
-                           + margin / (cost - commission * old_margin) * 100)  # Цена
+        result["Price"] = (cost, float(unit_cost) / (cost - commission * old_margin) * 100
+                           + float(full_commission) / (cost - commission * old_margin) * 100
+                           + float(logistic_price) / (cost - commission * old_margin) * 100
+                           + float(unit_storage_cost) / (cost - commission * old_margin) * 100
+                           + float(margin) / (cost - commission * old_margin) * 100)  # Цена
     else:
-        result["Price"] = (cost, unit_cost / cost * 100
-                           + full_commission / cost * 100
-                           + logistic_price / cost * 100
-                           + unit_storage_cost / cost * 100)  # Цена
-    result["Commis"] = cost * commission
+        result["Price"] = (cost, float(unit_cost) / cost * 100
+                           + float(full_commission) / cost * 100
+                           + float(logistic_price) / cost * 100
+                           + float(unit_storage_cost) / cost * 100)  # Цена
+    result["Commis"] = (0, cost * commission)
     if unit_count > 0:
-        result["tr_margin"] = transit_margin
-        result["tr_cost"] = transit_cost
-        result["tr_delta"] = transit_cost - cost
+        result["tr_margin"] = (0, transit_margin)
+        result["tr_cost"] = (0, transit_cost)
+        result["tr_delta"] = (0, transit_cost - cost)
     return result
 
 
