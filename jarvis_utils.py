@@ -9,9 +9,9 @@ def create_parser(lst: list[(str, str)]):
 
 
 def load_data(filename: str) -> list[float]:
-    result = []
+    result: list[float] = []
     with (open(filename, "r")) as file:
-        lines = file.readlines()
+        lines: list[str] = file.readlines()
         for line in lines:
             for cost in line.split(","):
                 if cost != "" and cost != "\n":
