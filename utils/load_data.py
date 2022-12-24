@@ -5,7 +5,7 @@ from os.path import exists
 from os import mkdir
 from os import listdir
 from os.path import isfile, join
-from request_utils import get_storage_dict, load_all_product_niche
+from utils.request_utils import get_storage_dict, load_all_product_niche
 
 
 def get_storage_data(product_ids: [int]) -> dict[int, dict[int, int]]:
