@@ -10,8 +10,9 @@ from datetime import datetime, timedelta
 from os.path import join
 
 
-def get_parent():
-    session = requests.Session()
+def get_parents() -> list[str]:
+    parent_category: list[str] = []
+    session = Session()
     adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
     session.mount('http://', adapter)
     response = session.get('https://suppliers-api.wildberries.ru/content/v1/object/parent/all',
@@ -21,14 +22,14 @@ def get_parent():
                                                 '1VoUp9Od9dzSWSNVSQjQnRujUvqOUY4oxO-pZXAqI1Q'})
 
     json_code = response.json()
-    parent_category = []
     for data in json_code['data']:
         parent_category.append(data['name'])
+    session.close()
     return parent_category
 
 
-def get_object_name(text : str):
-    object_name_list = []
+def get_object_names(text: str) -> list[str]:
+    object_name_list: list[str] = []
     session = requests.Session()
     adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
     session.mount('http://', adapter)
@@ -41,6 +42,7 @@ def get_object_name(text : str):
     json_code = response.json()
     for data in json_code['data']:
         object_name_list.append(data['objectName'])
+    session.close()
     return object_name_list
 
 

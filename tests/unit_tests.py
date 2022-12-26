@@ -7,10 +7,10 @@ from utils import constants
 
 from utils.calc_utils import get_frequency_stats
 from utils.jarvis_utils import load_data
-from utils.load_data import load
-from utils.load_data import get_storage_data
+from utils.load_data import load, get_storage_data
 from utils.margin_calc import unit_economy_calc, get_mean_concurrent_cost
 from tests.test_data import cost_data
+from utils.request_utils import  get_object_names, get_parents
 
 
 class MyTestCase(unittest.TestCase):
@@ -24,6 +24,15 @@ class MyTestCase(unittest.TestCase):
         storage_data: dict[int, dict[int, int]] = get_storage_data(product_ids)
         self.assertIsNotNone(storage_data)
         self.assertEqual(2, len(storage_data.keys()))
+
+    def test_get_parents(self):
+        parent_categories = get_parents()
+        self.assertNotEqual(len(parent_categories), 0)
+
+    def test_get_objects_name(self):
+        text_object = "Кофе"
+        object_names = get_object_names(text_object)
+        self.assertNotEqual(len(object_names), 0)
 
     def test_unit_economy_calc(self):
         niche = 'кофе'
