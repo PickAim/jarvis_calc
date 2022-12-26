@@ -11,6 +11,7 @@ from os.path import join
 
 
 def get_parent() -> list[str]:
+    parent_category: list[str]  = []
     session = Session()
     adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
     session.mount('http://', adapter)
@@ -21,7 +22,6 @@ def get_parent() -> list[str]:
                                                 '1VoUp9Od9dzSWSNVSQjQnRujUvqOUY4oxO-pZXAqI1Q'})
 
     json_code = response.json()
-    parent_category = []
     for data in json_code['data']:
         parent_category.append(data['name'])
     session.close()
@@ -29,7 +29,7 @@ def get_parent() -> list[str]:
 
 
 def get_object_name(text: str) -> list[str]:
-    object_name_list = []
+    object_name_list: list[str] = []
     session = requests.Session()
     adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
     session.mount('http://', adapter)
@@ -44,7 +44,6 @@ def get_object_name(text: str) -> list[str]:
         object_name_list.append(data['objectName'])
     session.close()
     return object_name_list
-
 
 async def get_page_data(session: ClientSession, product_id: int) -> list[float]:
     avr_mass: list[float] = []
