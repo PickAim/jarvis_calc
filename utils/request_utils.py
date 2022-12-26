@@ -11,7 +11,7 @@ from os.path import join
 
 
 def get_parents() -> list[str]:
-    parent_category: list[str] = []
+    parent_categories: list[str] = []
     session = Session()
     adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
     session.mount('http://', adapter)
@@ -23,9 +23,9 @@ def get_parents() -> list[str]:
 
     json_code = response.json()
     for data in json_code['data']:
-        parent_category.append(data['name'])
+        parent_categories.append(data['name'])
     session.close()
-    return parent_category
+    return parent_categories
 
 
 def get_object_names(text: str) -> list[str]:
