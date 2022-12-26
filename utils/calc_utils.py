@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils.request_utils import get_object_name
+from .request_utils import get_object_names
 
 
 def frequency_calc(costs: list[float], n_samples: int) -> tuple[list[float], list[int]]:
@@ -70,7 +70,7 @@ def sort_by_len_alphabet(names: list[str]) -> list[str]:
 
 
 def get_nearest_keywords(word: str) -> list[str]:
-    names: list[str] = get_object_name(word)
+    names: list[str] = get_object_names(word)
     scored_dict: dict[float, list[str]] = score_object_names(word, names)
     result: list[str] = []
     for score in scored_dict.keys():
