@@ -1,11 +1,9 @@
 import asyncio
 
 from asyncio import AbstractEventLoop
-from os.path import exists
-from os import mkdir
-from os import listdir
-from os.path import isfile, join
-from .request_utils import get_storage_dict, load_all_product_niche
+from os.path import exists,isfile, join
+from os import mkdir,listdir
+from request_utils import get_storage_dict, load_all_product_niche
 
 
 def get_storage_data(product_ids: [int]) -> dict[int, dict[int, int]]:

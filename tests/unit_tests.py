@@ -25,6 +25,16 @@ class MyTestCase(unittest.TestCase):
         self.assertIsNotNone(storage_data)
         self.assertEqual(2, len(storage_data.keys()))
 
+    def test_get_parent(self):
+        parent_category = get_parent()
+
+        self.assertNotEqual(len(parent_category),0)
+
+    def test_get_objects_name(self):
+        text_object = "Кофе"
+        objects_name = get_object_name(text_object)
+        self.assertNotEqual(len(objects_name),0)
+
     def test_unit_economy_calc(self):
         niche = 'кофе'
         is_update = False
