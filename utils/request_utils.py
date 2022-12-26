@@ -10,8 +10,8 @@ from datetime import datetime, timedelta
 from os.path import join
 
 
-def get_parent() -> list[str]:
-    parent_category: list[str]  = []
+def get_parents() -> list[str]:
+    parent_category: list[str] = []
     session = Session()
     adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
     session.mount('http://', adapter)
@@ -28,7 +28,7 @@ def get_parent() -> list[str]:
     return parent_category
 
 
-def get_object_name(text: str) -> list[str]:
+def get_object_names(text: str) -> list[str]:
     object_name_list: list[str] = []
     session = requests.Session()
     adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
@@ -44,6 +44,7 @@ def get_object_name(text: str) -> list[str]:
         object_name_list.append(data['objectName'])
     session.close()
     return object_name_list
+
 
 async def get_page_data(session: ClientSession, product_id: int) -> list[float]:
     avr_mass: list[float] = []
