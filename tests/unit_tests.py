@@ -5,7 +5,7 @@ from os.path import join
 import numpy as np
 from utils import constants
 
-from utils.calc_utils import get_frequency_stats
+from utils.calc_utils import get_frequency_stats, get_nearest_keywords
 from utils.jarvis_utils import load_data
 from utils.load_data import load
 from utils.load_data import get_storage_data
@@ -53,6 +53,11 @@ class MyTestCase(unittest.TestCase):
         n_samples = int(len(loaded_cost_data) * 0.1)  # todo think about number of samples
         x, y = get_frequency_stats(loaded_cost_data, n_samples + 1)
         self.assertEqual(len(x), n_samples + 1)
+
+    def test_sorting(self):
+        word = "Кофе"
+        result = get_nearest_keywords(word)
+        self.assertEqual("готовый кофе", result[0])
 
 
 if __name__ == '__main__':
