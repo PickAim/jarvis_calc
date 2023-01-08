@@ -50,4 +50,4 @@ def get_frequency_stats(cost_data: list[float], n_samples: int) -> tuple[list[fl
                 break
         else:
             break
-    return keys, frequencies
+    return list(map(int, keys)), list(map(int, frequencies))
