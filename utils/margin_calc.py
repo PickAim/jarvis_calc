@@ -40,6 +40,7 @@ def unit_economy_calc(buy_price: int,
         "Log": (result_logistic_price, float(result_logistic_price) / mean_concurrent_cost),  # Логистика
         "Store": (result_storage_price, float(result_storage_price) / mean_concurrent_cost),  # Хранение
         "Margin": (result_product_margin, float(result_product_margin) / mean_concurrent_cost),  # Маржа в копейках
+        "Price": (mean_concurrent_cost, float(mean_concurrent_cost) / mean_concurrent_cost),  # Рекомендованная цена
         "TProfit": (result_transit_profit, 1.0),  # Чистая прибыль с транзита
         "ROI": (result_transit_profit / investments, 1.0),  # ROI
         "TMargin": (result_transit_profit / revenue, 1.0)  # Маржа с транзита (%)
@@ -97,10 +98,13 @@ def get_mean_concurrent_cost(cost_data: ndarray,
                              storage_price: int,
                              logistic_to_customer: int) -> int:
     keys: list[int] = []
-    step: int = len(cost_data) // SAMPLES_COUNT
-    for i in range(SAMPLES_COUNT - 1):
-        keys.append(i * step)
-    keys.append(len(cost_data) - 1)
+    if len(cost_data) > SAMPLES_COUNT:
+        step: int = len(cost_data) // SAMPLES_COUNT
+        for i in range(SAMPLES_COUNT - 1):
+            keys.append(i * step)
+        keys.append(len(cost_data) - 1)
+    else:
+        keys.extend([0, len(cost_data) - 1])
     for i in range(1, len(keys)):
         concurrent_margin: int = get_concurrent_margin(cost_data[keys[i - 1]:keys[i]].mean(), unit_cost,
                                                        storage_price, commission, logistic_to_customer)
