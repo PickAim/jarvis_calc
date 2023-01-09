@@ -1,4 +1,5 @@
-from jorm.market.infrastructure import Niche
+from jorm.market.infrastructure import Niche, Warehouse
+from jorm.market.person import Client
 from numpy import ndarray
 
 SAMPLES_COUNT: int = 20
@@ -49,28 +50,31 @@ def unit_economy_calc(buy_price: int,
 
 def unit_economy_calc_with_jorm(buy_price: int,
                                 pack_price: int,
-                                storage_price: int,
-                                client_tax: float,
                                 niche: Niche,
+                                warehouse: Warehouse,
+                                client: Client,
                                 transit_price: int = 0.0,
                                 transit_count: int = 0.0) -> dict:
     unit_cost: int = (buy_price + pack_price)
-    mean_concurrent_cost: int = niche.get_mean_concurrent_cost(unit_cost, storage_price)
+    mean_concurrent_cost: int = niche.get_mean_concurrent_cost(unit_cost,
+                                                               warehouse.basic_logistic_to_customer_commission,
+                                                               warehouse.basic_storage_commission)
     result_commission: int = int(mean_concurrent_cost * niche.commission)
-    result_logistic_price: int = niche.logistic_price
-    result_storage_price = storage_price
+    result_logistic_price: int = warehouse.basic_logistic_to_customer_commission
+    result_storage_price = warehouse.basic_storage_commission
     if transit_count > 0:
         result_logistic_price += transit_price / transit_count
-        result_storage_price = MONTH * storage_price
+        result_storage_price = MONTH * result_storage_price
     result_product_margin: int \
         = mean_concurrent_cost - result_commission - result_logistic_price - result_storage_price - unit_cost
 
     revenue: int = mean_concurrent_cost * transit_count
     investments: int = unit_cost * transit_count
+    volume = niche.get_mean_product_volume()
     marketplace_expenses: int = int(revenue * niche.commission
-                                    + niche.logistic_price * transit_count
-                                    + transit_count * niche.returned_percent * 33)
-    result_transit_profit: int = revenue - investments - marketplace_expenses - int(revenue * client_tax)
+                                    + (warehouse.calculate_once_logistic_price(volume, niche.returned_percent)
+                                       + warehouse.calculate_storage_price(volume)) * transit_count)
+    result_transit_profit: int = revenue - investments - marketplace_expenses - int(revenue * client.get_profit_tax())
     return {
         "Pcost": (buy_price, float(buy_price) / mean_concurrent_cost),  # Закупочная себестоимость
         "Pack": (pack_price, float(pack_price) / mean_concurrent_cost),  # Упаковка
