@@ -4,10 +4,10 @@ import numpy as np
 
 from jorm.market.infrastructure import Niche, MarketplaceNiche
 
-from utils.calc_utils import get_frequency_stats
-from utils.margin_calc import unit_economy_calc, unit_economy_calc_with_jorm, get_mean_concurrent_cost
+from jarvis_calc.utils.calc_utils import get_frequency_stats
+from jarvis_calc.utils.margin_calc import unit_economy_calc, unit_economy_calc_with_jorm, get_mean_concurrent_cost
 from tests.test_data import cost_data
-from utils.temporary import get_commission_for, WB_OWNED
+from jarvis_calc.utils.temporary import get_commission_for, WB_OWNED
 
 
 class MyTestCase(unittest.TestCase):

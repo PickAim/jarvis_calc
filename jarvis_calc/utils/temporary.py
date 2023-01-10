@@ -1,5 +1,5 @@
 import json
-from files.file_constants import commission_json, commission_csv
+from jarvis_calc.files.file_constants import commission_json, commission_csv
 
 WB_OWNED: str = "wb"
 SELLER_OWNED: str = "owned"
