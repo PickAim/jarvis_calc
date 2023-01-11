@@ -6,7 +6,7 @@ from jorm.market.infrastructure import Niche, Warehouse, Address, HandlerType
 from jorm.market.items import ProductHistory, Product
 from jorm.market.person import Client, ClientInfo
 
-from jarvis_calc.utils.calc_utils import get_frequency_stats
+from jarvis_calc.utils.calc_utils import get_frequency_stats, get_frequency_stats_with_jorm
 from jarvis_calc.utils.margin_calc import unit_economy_calc, unit_economy_calc_with_jorm, get_mean_concurrent_cost
 from tests.test_data import cost_data
 from jarvis_calc.utils.temporary import get_commission_for, WB_OWNED
@@ -15,8 +15,13 @@ from jarvis_calc.utils.temporary import get_commission_for, WB_OWNED
 class MyTestCase(unittest.TestCase):
     def test_only_freq_calc(self):
         n_samples = int(len(cost_data) * 0.1)  # todo think about number of samples
-        x, y = get_frequency_stats(cost_data, n_samples + 1)
-        self.assertEqual(len(x), n_samples + 1)
+        x, y = get_frequency_stats(cost_data, n_samples)
+        self.assertEqual(n_samples, len(x))
+
+    def test_only_freq_calc_with_jorm(self):
+        niche: Niche = self.create_test_niche()
+        x, y = get_frequency_stats_with_jorm(niche)
+        self.assertEqual(int(len(cost_data) * 0.1), len(x))
 
     def test_mean_concurrent_cost_calc(self):
         costs = np.array(cost_data.copy())
