@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from jorm.market.infrastructure import Niche, MarketplaceNiche, Warehouse, Address
-from jorm.market.items import MarketplaceProduct, ProductHistory
+from jorm.market.infrastructure import Niche, Warehouse, Address, HandlerType
+from jorm.market.items import ProductHistory, Product
 from jorm.market.person import Client, ClientInfo
 
 from jarvis_calc.utils.calc_utils import get_frequency_stats
@@ -28,10 +28,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(971_23, mid_cost)
 
     def test_mean_concurrent_cost_calc_with_niche(self):
-        niche: Niche = MarketplaceNiche("Test niche", 0.17, 0.1, [])
-        niche_cost_data = cost_data.copy()
-        niche_cost_data.sort()
-        niche.cost_data = np.array(niche_cost_data)
+        niche: Niche = self.create_test_niche()
         buy = 500_00
         pack = 150_00
         unit_cost: int = buy + pack
@@ -55,20 +52,15 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(71_07, result["Margin"][0])
 
     def test_unit_economy_calc_with_jorm(self):
-        niche: Niche = MarketplaceNiche("Test niche", 0.17, 0.1, [MarketplaceProduct("prod1", 15, 1, ProductHistory(),
-                                                                                     width=0.15, height=0.3,
-                                                                                     depth=0.1)])
-        niche_cost_data = cost_data.copy()
-        niche_cost_data.sort()
-        niche.cost_data = np.array(niche_cost_data)
+        niche: Niche = self.create_test_niche()
         buy: int = 50_00
         pack: int = 50_00
         transit_price: int = 1000_00
         transit_count = 1000
-        warehouse = Warehouse("warehouse", 1, Address(), [], basic_logistic_to_customer_commission=5500,
-                              additional_logistic_to_customer_commission=0, logistic_from_customer_commission=3300,
-                              basic_storage_commission=15, additional_storage_commission=0,
-                              mono_palette_storage_commission=10)
+        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), [],
+                              basic_logistic_to_customer_commission=5500, additional_logistic_to_customer_commission=0,
+                              logistic_from_customer_commission=3300, basic_storage_commission=15,
+                              additional_storage_commission=0, mono_palette_storage_commission=10)
         client = Client("client", ClientInfo(profit_tax=0.06))
         result = unit_economy_calc_with_jorm(buy, pack, niche, warehouse, client, transit_price, transit_count)
         self.assertEqual(71_07, result["Margin"][0])
@@ -76,6 +68,21 @@ class MyTestCase(unittest.TestCase):
     def test_commission_load(self):
         commission: float = get_commission_for("Автомобильные товары", "Подстаканники электрические", WB_OWNED)
         self.assertEqual(0.17, commission)
+
+    @staticmethod
+    def create_test_niche() -> Niche:
+        niche_commissions_dict: dict[HandlerType, float] = {
+            HandlerType.MARKETPLACE: 0.17,
+            HandlerType.PARTIAL_CLIENT: 0.15,
+            HandlerType.CLIENT: 0.10
+        }
+        niche: Niche = Niche("Test niche", niche_commissions_dict, 0.1,
+                             [Product("prod1", 15, 1, ProductHistory(),
+                                      width=0.15, height=0.3, depth=0.1)])
+        niche_cost_data = cost_data.copy()
+        niche_cost_data.sort()
+        niche.cost_data = np.array(niche_cost_data)
+        return niche
 
 
 if __name__ == '__main__':

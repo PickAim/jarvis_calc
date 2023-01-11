@@ -55,11 +55,12 @@ def unit_economy_calc_with_jorm(buy_price: int,
                                 client: Client,
                                 transit_price: int = 0.0,
                                 transit_count: int = 0.0) -> dict:
+    niche_commission: float = niche.get_commission(warehouse.handler_type)
     unit_cost: int = (buy_price + pack_price)
     mean_concurrent_cost: int = niche.get_mean_concurrent_cost(unit_cost,
                                                                warehouse.basic_logistic_to_customer_commission,
                                                                warehouse.basic_storage_commission)
-    result_commission: int = int(mean_concurrent_cost * niche.commission)
+    result_commission: int = int(mean_concurrent_cost * niche_commission)
     result_logistic_price: int = warehouse.basic_logistic_to_customer_commission
     result_storage_price = warehouse.basic_storage_commission
     if transit_count > 0:
@@ -71,8 +72,8 @@ def unit_economy_calc_with_jorm(buy_price: int,
     revenue: int = mean_concurrent_cost * transit_count
     investments: int = unit_cost * transit_count
     volume = niche.get_mean_product_volume()
-    marketplace_expenses: int = int(revenue * niche.commission
-                                    + (warehouse.calculate_once_logistic_price(volume, niche.returned_percent)
+    marketplace_expenses: int = int(revenue * niche_commission
+                                    + (warehouse.calculate_logistic_price_for_one(volume, niche.returned_percent)
                                        + warehouse.calculate_storage_price(volume)) * transit_count)
     result_transit_profit: int = revenue - investments - marketplace_expenses - int(revenue * client.get_profit_tax())
     return {
