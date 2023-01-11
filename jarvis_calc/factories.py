@@ -1,7 +1,10 @@
 from enum import Enum
+from functools import lru_cache
 
 from jarvis_db.access.accessers import ConcreteDBAccessProvider
 from jorm.market.infrastructure import Niche, Warehouse, HandlerType, Address
+from jorm.market.person import User, Client, ClientInfo
+
 from .database_interactors.db_access import DBAccessProvider
 
 
@@ -13,9 +16,18 @@ class JORMFactory:
     def __init__(self):
         self.db_access_provider: DBAccessProvider = ConcreteDBAccessProvider()
 
+    @lru_cache(maxsize=2)
+    def get_current_client(self) -> Client:
+        current_user: User = self.db_access_provider.get_current_user()
+        if isinstance(current_user, Client):
+            return current_user
+        return self.__convert_other_user_to_client(current_user)
+
+    @lru_cache(maxsize=5)
     def niche(self, niche_name: str) -> Niche:
         return self.db_access_provider.get_niche(niche_name)
 
+    @lru_cache(maxsize=5)
     def warehouse(self, warehouse_name: str) -> Warehouse:
         if warehouse_name == FactoryKeywords.DEFAULT_WAREHOUSE:
             return self.__create_default_warehouse()
@@ -51,3 +63,8 @@ class JORMFactory:
                       additional_storage_commission=mean_additional_storage_commission,
                       mono_palette_storage_commission=mean_mono_palette_storage_commission)
         return result_warehouse
+
+    @staticmethod
+    def __convert_other_user_to_client(user: User) -> Client:
+        result_client: Client = Client(user.name, ClientInfo())
+        return result_client
