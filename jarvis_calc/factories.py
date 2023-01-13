@@ -4,6 +4,7 @@ from functools import lru_cache
 from jarvis_db.access.accessers import ConcreteDBAccessProvider
 from jorm.market.infrastructure import Niche, Warehouse, HandlerType, Address
 from jorm.market.person import User, Client, ClientInfo
+from jorm.market.service import Request
 
 from .database_interactors.db_access import DBAccessProvider
 
@@ -63,6 +64,9 @@ class JORMFactory:
                       additional_storage_commission=mean_additional_storage_commission,
                       mono_palette_storage_commission=mean_mono_palette_storage_commission)
         return result_warehouse
+
+    def request(self, json_request) -> Request:
+        pass
 
     @staticmethod
     def __convert_other_user_to_client(user: User) -> Client:
