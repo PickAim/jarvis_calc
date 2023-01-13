@@ -8,8 +8,9 @@ from jorm.market.person import Client, ClientInfo
 
 from jarvis_calc.utils.calc_utils import get_frequency_stats, get_frequency_stats_with_jorm
 from jarvis_calc.utils.margin_calc import unit_economy_calc, unit_economy_calc_with_jorm, get_mean_concurrent_cost
+from jarvis_calc.utils.temporary import get_commission_for
+
 from tests.test_data import cost_data
-from jarvis_calc.utils.temporary import get_commission_for, WB_OWNED
 
 
 class MyTestCase(unittest.TestCase):
@@ -71,7 +72,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(71_07, result["Margin"][0])
 
     def test_commission_load(self):
-        commission: float = get_commission_for("Автомобильные товары", "Подстаканники электрические", WB_OWNED)
+        commission: float = get_commission_for("Автомобильные товары",
+                                               "Подстаканники электрические", HandlerType.MARKETPLACE.__str__())
         self.assertEqual(0.17, commission)
 
     @staticmethod

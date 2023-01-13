@@ -1,9 +1,6 @@
 import json
 from jarvis_calc.files.file_constants import commission_json, commission_csv
-
-WB_OWNED: str = "wb"
-SELLER_OWNED: str = "owned"
-ALL_TO_SELLER: str = "self"
+from jorm.market.infrastructure import HandlerType
 
 
 def resolve_commission_file(filepath: str) -> None:
@@ -15,9 +12,9 @@ def resolve_commission_file(filepath: str) -> None:
             if not commission_dict.keys().__contains__(splitted[0]):
                 commission_dict[splitted[0]] = {}
             commission_dict[splitted[0]][splitted[1]] = {
-                WB_OWNED: float(splitted[2]) / 100,
-                SELLER_OWNED: float(splitted[3]) / 100,
-                ALL_TO_SELLER: float(splitted[4]) / 100
+                HandlerType.MARKETPLACE.__str__(): float(splitted[2]) / 100,
+                HandlerType.PARTIAL_CLIENT.__str__(): float(splitted[3]) / 100,
+                HandlerType.CLIENT.__str__(): float(splitted[4]) / 100
             }
         json_string: str = json.dumps(commission_dict, indent=4, ensure_ascii=False)
         with open(commission_json, "w") as out_file:
