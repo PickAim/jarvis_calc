@@ -1,12 +1,30 @@
 from abc import ABC, abstractmethod
-from jorm.market.person import Client
+
+from jorm.market.infrastructure import Niche, Warehouse
+from jorm.market.person import Client, User
 from jorm.market.service import Request
 
 
 class DBAccessProvider(ABC):
 
     @abstractmethod
-    def get_client(self) -> Client:
+    def get_current_user(self) -> User:
+        pass
+
+    @abstractmethod
+    def get_current_client(self) -> Client:
+        pass
+
+    @abstractmethod
+    def get_niche(self, niche_name: str) -> Niche:
+        pass
+
+    @abstractmethod
+    def get_warehouse(self, warehouse_name: str) -> Warehouse:
+        pass
+
+    @abstractmethod
+    def get_all_warehouses(self) -> list[Warehouse]:
         pass
 
 
