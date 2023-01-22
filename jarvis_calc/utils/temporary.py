@@ -9,12 +9,12 @@ def resolve_commission_file(filepath: str) -> None:
         lines: list[str] = file.readlines()
         for line in lines:
             splitted: list[str] = line.split(";")
-            if not commission_dict.keys().__contains__(splitted[0]):
+            if splitted[0] not in commission_dict.keys():
                 commission_dict[splitted[0]] = {}
             commission_dict[splitted[0]][splitted[1]] = {
-                HandlerType.MARKETPLACE.__str__(): float(splitted[2]) / 100,
-                HandlerType.PARTIAL_CLIENT.__str__(): float(splitted[3]) / 100,
-                HandlerType.CLIENT.__str__(): float(splitted[4]) / 100
+                str(HandlerType.MARKETPLACE): float(splitted[2]) / 100,
+                str(HandlerType.PARTIAL_CLIENT): float(splitted[3]) / 100,
+                str(HandlerType.CLIENT): float(splitted[4]) / 100
             }
         json_string: str = json.dumps(commission_dict, indent=4, ensure_ascii=False)
         with open(commission_json, "w") as out_file:

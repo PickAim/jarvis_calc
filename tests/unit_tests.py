@@ -73,7 +73,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_commission_load(self):
         commission: float = get_commission_for("Автомобильные товары",
-                                               "Подстаканники электрические", HandlerType.MARKETPLACE.__str__())
+                                               "Подстаканники электрические", str(HandlerType.MARKETPLACE))
         self.assertEqual(0.17, commission)
 
     @staticmethod

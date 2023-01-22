@@ -55,7 +55,7 @@ def unit_economy_calc_with_jorm(buy_price: int,
                                 client: Client,
                                 transit_price: int = 0.0,
                                 transit_count: int = 0.0) -> dict:
-    niche_commission: float = niche.get_commission(warehouse.handler_type)
+    niche_commission: float = warehouse.get_niche_commission(niche)
     unit_cost: int = (buy_price + pack_price)
     mean_concurrent_cost: int = niche.get_mean_concurrent_cost(unit_cost,
                                                                warehouse.basic_logistic_to_customer_commission,
