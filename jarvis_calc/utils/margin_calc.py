@@ -16,6 +16,7 @@ def unit_economy_calc(buy_price: int,
                       cost_data: ndarray,
                       transit_price: int = 0.0,
                       transit_count: int = 0.0) -> dict:
+    # TODO remove it after DB full implements
     unit_cost: int = (buy_price + pack_price)
     mean_concurrent_cost: int = get_mean_concurrent_cost(cost_data, unit_cost, commission,
                                                          storage_price, logistic_to_customer)
@@ -54,7 +55,8 @@ def unit_economy_calc_with_jorm(buy_price: int,
                                 warehouse: Warehouse,
                                 client: Client,
                                 transit_price: int = 0.0,
-                                transit_count: int = 0.0) -> dict:
+                                transit_count: int = 0.0,
+                                market_place_transit_price: int = 0.0) -> dict:
     niche_commission: float = warehouse.get_niche_commission(niche)
     unit_cost: int = (buy_price + pack_price)
     mean_concurrent_cost: int = niche.get_mean_concurrent_cost(unit_cost,
@@ -69,15 +71,19 @@ def unit_economy_calc_with_jorm(buy_price: int,
     result_transit_profit: int = 0
 
     if transit_count > 0:
-        result_logistic_price += transit_price / transit_count
+        result_logistic_price += (transit_price + market_place_transit_price) / transit_count
         result_storage_price = MONTH * result_storage_price
+
+        volume: float = niche.get_mean_product_volume()
+        logistic_expanses: int = market_place_transit_price
+        if market_place_transit_price == 0:
+            logistic_expanses =\
+                warehouse.calculate_logistic_price_for_one(volume, niche.returned_percent) * transit_count
 
         revenue = mean_concurrent_cost * transit_count
         investments = unit_cost * transit_count
-        volume = niche.get_mean_product_volume()
-        marketplace_expenses: int = int(revenue * niche_commission
-                                        + (warehouse.calculate_logistic_price_for_one(volume, niche.returned_percent)
-                                           + warehouse.calculate_storage_price(volume)) * transit_count)
+        marketplace_expenses: int = int(revenue * niche_commission + logistic_expanses
+                                        + warehouse.calculate_storage_price(volume) * transit_count)
         result_transit_profit = revenue - investments - marketplace_expenses - int(revenue * client.get_profit_tax())
 
     result_product_margin: int = (mean_concurrent_cost - result_commission
@@ -109,6 +115,7 @@ def get_mean_concurrent_cost(cost_data: ndarray,
                              commission: float,
                              storage_price: int,
                              logistic_to_customer: int) -> int:
+    # TODO remove it after DB full implements
     keys: list[int] = []
     if len(cost_data) > SAMPLES_COUNT:
         step: int = len(cost_data) // SAMPLES_COUNT

@@ -15,6 +15,7 @@ from tests.test_data import cost_data
 
 class MyTestCase(unittest.TestCase):
     def test_only_freq_calc(self):
+        # TODO remove it after DB full implements
         n_samples = int(len(cost_data) * 0.1)  # todo think about number of samples
         x, y = get_frequency_stats(cost_data, n_samples)
         self.assertEqual(n_samples, len(x))
@@ -25,6 +26,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(int(len(cost_data) * 0.1), len(x))
 
     def test_mean_concurrent_cost_calc(self):
+        # TODO remove it after DB full implements
         costs = np.array(cost_data.copy())
         costs.sort()
         buy = 500_00
@@ -42,6 +44,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(971_23, mid_cost)
 
     def test_unit_economy_calc(self):
+        # TODO remove it after DB full implements
         costs = np.array(cost_data.copy())
         costs.sort()
         buy: int = 50_00
@@ -62,14 +65,16 @@ class MyTestCase(unittest.TestCase):
         buy: int = 50_00
         pack: int = 50_00
         transit_price: int = 1000_00
-        transit_count = 1000
+        transit_count: int = 1000
+        marketplace_transit_price: int = 1500_00
         warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), [],
-                              basic_logistic_to_customer_commission=5500, additional_logistic_to_customer_commission=0,
-                              logistic_from_customer_commission=3300, basic_storage_commission=15,
+                              basic_logistic_to_customer_commission=55_00, additional_logistic_to_customer_commission=0,
+                              logistic_from_customer_commission=33_00, basic_storage_commission=15,
                               additional_storage_commission=0, mono_palette_storage_commission=10)
         client = Client("client", ClientInfo(profit_tax=0.06))
-        result = unit_economy_calc_with_jorm(buy, pack, niche, warehouse, client, transit_price, transit_count)
-        self.assertEqual(71_07, result["Margin"][0])
+        result = unit_economy_calc_with_jorm(buy, pack, niche, warehouse, client,
+                                             transit_price, transit_count, marketplace_transit_price)
+        self.assertEqual(69_57, result["Margin"][0])
 
     def test_commission_load(self):
         commission: float = get_commission_for("Автомобильные товары",

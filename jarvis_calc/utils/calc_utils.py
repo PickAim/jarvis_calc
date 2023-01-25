@@ -22,6 +22,7 @@ def get_cleared_mean(lst: list[int]) -> int:
 
 
 def get_frequency_stats(cost_data: list[float], n_samples: int) -> tuple[list[float], list[int]]:
+    # TODO remove it after DB full implements
     if len(cost_data) <= 0:
         return [], []
     cost_data.sort()
