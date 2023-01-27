@@ -3,7 +3,6 @@ from functools import lru_cache
 
 from jarvis_db.access.accessers import ConcreteDBAccessProvider
 from jorm.market.infrastructure import Niche, Warehouse, HandlerType, Address
-from jorm.market.person import User, Client, ClientInfo
 from jorm.market.service import Request
 
 from .database_interactors.db_access import DBAccessProvider
@@ -16,13 +15,6 @@ class FactoryKeywords(Enum):
 class JORMFactory:
     def __init__(self):
         self.db_access_provider: DBAccessProvider = ConcreteDBAccessProvider()
-
-    @lru_cache(maxsize=2)
-    def get_current_client(self) -> Client:
-        current_user: User = self.db_access_provider.get_current_user()
-        if isinstance(current_user, Client):
-            return current_user
-        return self.__convert_other_user_to_client(current_user)
 
     @lru_cache(maxsize=5)
     def niche(self, niche_name: str) -> Niche:
@@ -67,8 +59,3 @@ class JORMFactory:
 
     def request(self, json_request) -> Request:
         pass
-
-    @staticmethod
-    def __convert_other_user_to_client(user: User) -> Client:
-        result_client: Client = Client(user.name, ClientInfo())
-        return result_client
