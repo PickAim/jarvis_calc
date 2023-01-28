@@ -3,6 +3,7 @@ from functools import lru_cache
 
 from jarvis_db.access.accessers import ConcreteDBAccessProvider
 from jorm.market.infrastructure import Niche, Warehouse, HandlerType, Address
+from jorm.market.person import Client, Account
 from jorm.market.service import Request
 
 from .database_interactors.db_access import DBAccessProvider
@@ -15,6 +16,14 @@ class FactoryKeywords(Enum):
 class JORMFactory:
     def __init__(self):
         self.db_access_provider: DBAccessProvider = ConcreteDBAccessProvider()
+
+    @staticmethod
+    def create_new_client() -> Client:
+        return Client()
+
+    @staticmethod
+    def create_account(login: str, hashed_password: bytes, phone_number: str = "") -> Account:
+        return Account(login, hashed_password, phone_number)
 
     @lru_cache(maxsize=5)
     def niche(self, niche_name: str) -> Niche:
@@ -48,8 +57,8 @@ class JORMFactory:
         mean_additional_storage_commission /= len(warehouses)
         mean_mono_palette_storage_commission //= len(warehouses)
         result_warehouse: Warehouse = \
-            Warehouse(FactoryKeywords.DEFAULT_WAREHOUSE.__str__(), 0, HandlerType.MARKETPLACE, Address(),
-                      [], basic_logistic_to_customer_commission=mean_basic_logistic_to_customer_commission,
+            Warehouse(str(FactoryKeywords.DEFAULT_WAREHOUSE), 0, HandlerType.MARKETPLACE, Address(), [],
+                      basic_logistic_to_customer_commission=mean_basic_logistic_to_customer_commission,
                       additional_logistic_to_customer_commission=mean_additional_logistic_to_customer_commission,
                       logistic_from_customer_commission=mean_logistic_from_customer_commission,
                       basic_storage_commission=mean_basic_storage_commission,
