@@ -4,7 +4,7 @@ import numpy as np
 
 from jorm.market.infrastructure import Niche, Warehouse, Address, HandlerType
 from jorm.market.items import ProductHistory, Product
-from jorm.market.person import Client, ClientInfo
+from jorm.market.person import Client, ClientInfo, ClientPrivilege
 
 from jarvis_calc.utils.calc_utils import get_frequency_stats, get_frequency_stats_with_jorm
 from jarvis_calc.utils.margin_calc import unit_economy_calc_with_jorm
@@ -43,7 +43,7 @@ class MyTestCase(unittest.TestCase):
                               basic_logistic_to_customer_commission=55_00, additional_logistic_to_customer_commission=0,
                               logistic_from_customer_commission=33_00, basic_storage_commission=15,
                               additional_storage_commission=0, mono_palette_storage_commission=10)
-        client = Client("client", ClientInfo(profit_tax=0.06))
+        client = Client("client", ClientPrivilege.BASIC, ClientInfo(profit_tax=0.06))
         result = unit_economy_calc_with_jorm(buy, pack, niche, warehouse, client,
                                              transit_price, transit_count, marketplace_transit_price)
         self.assertEqual(69_57, result["Margin"][0])
