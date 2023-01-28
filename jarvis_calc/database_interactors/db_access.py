@@ -31,5 +31,9 @@ class DBAccessProvider(ABC):
 class DBUpdateProvider(ABC):
 
     @abstractmethod
-    def save_request(self, request: Request) -> None:
+    def save_request(self, request: Request, user: User) -> None:
+        pass
+
+    @abstractmethod
+    def save_tokens(self, access_token: bytes, update_token: bytes, user: User) -> None:
         pass
