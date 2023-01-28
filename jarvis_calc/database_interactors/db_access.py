@@ -12,6 +12,10 @@ class DBAccessProvider(ABC):
         pass
 
     @abstractmethod
+    def get_user_by_token(self, access_token: bytes) -> User:
+        pass
+
+    @abstractmethod
     def get_account(self, login: str) -> Account:
         pass
 
@@ -35,5 +39,18 @@ class DBUpdateProvider(ABC):
         pass
 
     @abstractmethod
-    def save_tokens(self, access_token: bytes, update_token: bytes, user: User) -> None:
+    def save_all_tokens(self, access_token: bytes, update_token: bytes, imprint_token: bytes, user: User) -> None:
+        pass
+
+    @abstractmethod
+    def update_session_tokens(self, old_update_token: bytes, new_access_token: bytes, new_update_token: bytes) -> None:
+        # add exceptions
+        pass
+
+    @abstractmethod
+    def update_session_tokens_by_imprint(self, access_token: bytes, update_token: bytes, imprint_token: bytes, user: User) -> None:
+        pass
+
+    @abstractmethod
+    def save_user_and_account(self, user: User, account: Account) -> None:
         pass
