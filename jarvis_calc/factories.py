@@ -22,7 +22,7 @@ class JORMFactory:
         return Client()
 
     @staticmethod
-    def create_account(login: str, hashed_password: bytes, phone_number: str = "") -> Account:
+    def create_account(login: str, hashed_password: str, phone_number: str = "") -> Account:
         return Account(login, hashed_password, phone_number)
 
     @lru_cache(maxsize=5)

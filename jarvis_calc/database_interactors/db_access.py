@@ -8,11 +8,11 @@ from jorm.market.service import Request
 class DBAccessProvider(ABC):
 
     @abstractmethod
-    def get_user(self, account: Account) -> User:
+    def get_user_by_account(self, account: Account) -> User:
         pass
 
     @abstractmethod
-    def get_user_by_token(self, access_token: bytes) -> User:
+    def get_user_by_id(self, user_id: int) -> User:
         pass
 
     @abstractmethod
@@ -39,16 +39,17 @@ class DBUpdateProvider(ABC):
         pass
 
     @abstractmethod
-    def save_all_tokens(self, access_token: bytes, update_token: bytes, imprint_token: bytes, user: User) -> None:
+    def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user: User) -> None:
         pass
 
     @abstractmethod
-    def update_session_tokens(self, old_update_token: bytes, new_access_token: bytes, new_update_token: bytes) -> None:
+    def update_session_tokens(self, old_update_token: str, new_access_token: str, new_update_token: str) -> None:
         # add exceptions
         pass
 
     @abstractmethod
-    def update_session_tokens_by_imprint(self, access_token: bytes, update_token: bytes, imprint_token: bytes, user: User) -> None:
+    def update_session_tokens_by_imprint(self, access_token: str,
+                                         update_token: str, imprint_token: str, user: User) -> None:
         pass
 
     @abstractmethod
