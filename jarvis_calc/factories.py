@@ -3,7 +3,7 @@ from functools import lru_cache
 
 from jarvis_db.access.accessers import ConcreteDBAccessProvider
 from jorm.market.infrastructure import Niche, Warehouse, HandlerType, Address
-from jorm.market.person import User, Client, ClientInfo
+from jorm.market.person import Client, Account
 from jorm.market.service import Request
 
 from .database_interactors.db_access import DBAccessProvider
@@ -17,12 +17,13 @@ class JORMFactory:
     def __init__(self):
         self.db_access_provider: DBAccessProvider = ConcreteDBAccessProvider()
 
-    @lru_cache(maxsize=2)
-    def get_current_client(self) -> Client:
-        current_user: User = self.db_access_provider.get_current_user()
-        if isinstance(current_user, Client):
-            return current_user
-        return self.__convert_other_user_to_client(current_user)
+    @staticmethod
+    def create_new_client() -> Client:
+        return Client()
+
+    @staticmethod
+    def create_account(login: str, hashed_password: str, phone_number: str = "") -> Account:
+        return Account(login, hashed_password, phone_number)
 
     @lru_cache(maxsize=5)
     def niche(self, niche_name: str) -> Niche:
@@ -56,8 +57,8 @@ class JORMFactory:
         mean_additional_storage_commission /= len(warehouses)
         mean_mono_palette_storage_commission //= len(warehouses)
         result_warehouse: Warehouse = \
-            Warehouse(FactoryKeywords.DEFAULT_WAREHOUSE.__str__(), 0, HandlerType.MARKETPLACE, Address(),
-                      [], basic_logistic_to_customer_commission=mean_basic_logistic_to_customer_commission,
+            Warehouse(str(FactoryKeywords.DEFAULT_WAREHOUSE), 0, HandlerType.MARKETPLACE, Address(), [],
+                      basic_logistic_to_customer_commission=mean_basic_logistic_to_customer_commission,
                       additional_logistic_to_customer_commission=mean_additional_logistic_to_customer_commission,
                       logistic_from_customer_commission=mean_logistic_from_customer_commission,
                       basic_storage_commission=mean_basic_storage_commission,
@@ -67,8 +68,3 @@ class JORMFactory:
 
     def request(self, json_request) -> Request:
         pass
-
-    @staticmethod
-    def __convert_other_user_to_client(user: User) -> Client:
-        result_client: Client = Client(user.name, ClientInfo())
-        return result_client
