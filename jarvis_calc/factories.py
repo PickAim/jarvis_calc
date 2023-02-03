@@ -26,10 +26,6 @@ class JORMFactory:
         return Account(login, hashed_password, phone_number)
 
     @lru_cache(maxsize=5)
-    def niche(self, niche_name: str) -> Niche:
-        return self.db_access_provider.get_niche(niche_name)
-
-    @lru_cache(maxsize=5)
     def warehouse(self, warehouse_name: str) -> Warehouse:
         if warehouse_name == FactoryKeywords.DEFAULT_WAREHOUSE:
             return self.__create_default_warehouse()
