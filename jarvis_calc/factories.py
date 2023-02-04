@@ -1,12 +1,11 @@
 from enum import Enum
 from functools import lru_cache
 
-from jarvis_db.access.accessers import ConcreteDBAccessProvider
-from jorm.market.infrastructure import Niche, Warehouse, HandlerType, Address
+from jorm.market.infrastructure import Warehouse, HandlerType, Address
 from jorm.market.person import Client, Account
 from jorm.market.service import Request
 
-from .database_interactors.db_access import DBAccessProvider
+from jarvis_calc.database_interactors import DBController
 
 
 class FactoryKeywords(Enum):
@@ -15,7 +14,7 @@ class FactoryKeywords(Enum):
 
 class JORMFactory:
     def __init__(self):
-        self.db_access_provider: DBAccessProvider = ConcreteDBAccessProvider()
+        self.__db_controller: DBController = DBController()
 
     @staticmethod
     def create_new_client() -> Client:
@@ -26,17 +25,13 @@ class JORMFactory:
         return Account(login, hashed_password, phone_number)
 
     @lru_cache(maxsize=5)
-    def niche(self, niche_name: str) -> Niche:
-        return self.db_access_provider.get_niche(niche_name)
-
-    @lru_cache(maxsize=5)
     def warehouse(self, warehouse_name: str) -> Warehouse:
         if warehouse_name == FactoryKeywords.DEFAULT_WAREHOUSE:
             return self.__create_default_warehouse()
-        return self.db_access_provider.get_warehouse(warehouse_name)
+        return self.__db_controller.get_warehouse(warehouse_name)
 
     def __create_default_warehouse(self) -> Warehouse:
-        warehouses: list[Warehouse] = self.db_access_provider.get_all_warehouses()
+        warehouses: list[Warehouse] = self.__db_controller.get_all_warehouses()
         mean_basic_logistic_to_customer_commission: int = 0
         mean_additional_logistic_to_customer_commission: float = 0
         mean_logistic_from_customer_commission: int = 0

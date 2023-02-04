@@ -32,16 +32,7 @@ class DBAccessProvider(ABC):
         pass
 
 
-class DBUpdateProvider(ABC):
-
-    @abstractmethod
-    def save_request(self, request: Request, user: User) -> None:
-        pass
-
-    @abstractmethod
-    def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user: User) -> None:
-        pass
-
+class DBUpdater(ABC):
     @abstractmethod
     def update_session_tokens(self, old_update_token: str, new_access_token: str, new_update_token: str) -> None:
         # add exceptions
@@ -53,5 +44,17 @@ class DBUpdateProvider(ABC):
         pass
 
     @abstractmethod
+    def save_request(self, request: Request, user: User) -> None:
+        pass
+
+    @abstractmethod
+    def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user: User) -> None:
+        pass
+
+    @abstractmethod
     def save_user_and_account(self, user: User, account: Account) -> None:
+        pass
+
+    @abstractmethod
+    def load_new_niche(self, niche_name: str) -> Niche:
         pass
