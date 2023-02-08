@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from jorm.market.infrastructure import Niche, Warehouse
 from jorm.market.person import User, Account
 from jorm.market.service import Request
+from jorm.server.token.types import TokenType
 
 
 class DBAccessProvider(ABC):
@@ -29,6 +30,10 @@ class DBAccessProvider(ABC):
 
     @abstractmethod
     def get_all_warehouses(self) -> list[Warehouse]:
+        pass
+
+    @abstractmethod
+    def get_token_rnd_part(self, user_id: int, imprint: str, token_type: TokenType) -> str:
         pass
 
 

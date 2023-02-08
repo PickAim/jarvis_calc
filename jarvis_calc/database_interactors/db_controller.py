@@ -1,15 +1,26 @@
 from jorm.market.infrastructure import Warehouse, Niche
 from jorm.market.person import Account, User
 from jorm.market.service import Request
+from jorm.server.token.types import TokenType
 
 from jarvis_calc.database_interactors.db_access import DBAccessProvider, DBUpdater
 from jarvis_db.access.accessers import ConcreteDBAccessProvider
 from jdu.db_access.update.updaters import CalcDBUpdater
 
 
-class DBController(DBUpdater, DBAccessProvider):
-    __db_updater: DBUpdater = CalcDBUpdater()
-    __db__accessor: DBAccessProvider = ConcreteDBAccessProvider()
+class DBController:
+    def __init__(self):
+        self.__db_updater: DBUpdater = CalcDBUpdater()
+        self.__db__accessor: DBAccessProvider = ConcreteDBAccessProvider()
+
+    def check_token_rnd_part(self, rnd_part_to_check: str, user_id: int, imprint: str, token_type: int) -> bool:
+        if token_type == TokenType.ACCESS.value:
+            rnd_part_from_db: str = self.__db__accessor.get_token_rnd_part(user_id, imprint, TokenType.ACCESS)
+        elif token_type == TokenType.UPDATE.value:
+            rnd_part_from_db: str = self.__db__accessor.get_token_rnd_part(user_id, imprint, TokenType.UPDATE)
+        else:
+            raise Exception(str(type(DBController)) + ": unexpected token type")
+        return rnd_part_from_db == rnd_part_to_check
 
     def update_session_tokens(self, old_update_token: str, new_access_token: str, new_update_token: str) -> None:
         self.__db_updater.update_session_tokens(old_update_token, new_access_token, new_update_token)
