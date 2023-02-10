@@ -27,10 +27,10 @@ class JORMFactory:
     @lru_cache(maxsize=5)
     def warehouse(self, warehouse_name: str) -> Warehouse:
         if warehouse_name == FactoryKeywords.DEFAULT_WAREHOUSE:
-            return self.__create_default_warehouse()
+            return self.create_default_warehouse()
         return self.__db_controller.get_warehouse(warehouse_name)
 
-    def __create_default_warehouse(self) -> Warehouse:
+    def create_default_warehouse(self) -> Warehouse:
         warehouses: list[Warehouse] = self.__db_controller.get_all_warehouses()
         mean_basic_logistic_to_customer_commission: int = 0
         mean_additional_logistic_to_customer_commission: float = 0
