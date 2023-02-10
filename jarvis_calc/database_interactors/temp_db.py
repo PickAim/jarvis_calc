@@ -78,3 +78,6 @@ class TempDBUpdate(DBUpdater):
 
     def load_new_niche(self, niche_name: str) -> Niche:
         pass
+
+    def delete_tokens_for_user(self, user_id: int, imprint_token: str):
+        user_tokens[user_id].pop(imprint_token, None)

@@ -58,3 +58,6 @@ class DBController:
 
     def get_all_warehouses(self) -> list[Warehouse]:
         return self.__db__accessor.get_all_warehouses()
+
+    def delete_tokens_for_user(self, user_id: int, imprint_token: str):
+        self.__db_updater.delete_tokens_for_user(user_id, imprint_token)
