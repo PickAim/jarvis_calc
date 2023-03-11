@@ -10,12 +10,19 @@ from jarvis_calc.database_interactors.temp_db import TempUserInfoCollector, Temp
 
 
 class DBController:
+    instance = None
+
     def __init__(self):
         self.__user_info_collector: UserInfoCollector = TempUserInfoCollector()
         self.__jorm_collector: JORMCollector = TempJORMCollector()
 
         self.__user_info_changer: UserInfoChanger = TempUserInfoChanger()
         self.__jorm_changer: JORMChanger = TempJORMChanger()
+
+    def __new__(cls):
+        if cls.instance is None:
+            cls.instance = super(DBController, cls).__new__(cls)
+        return cls.instance
 
     def check_token_rnd_part(self, rnd_part_to_check: str, user_id: int, imprint: str, token_type: int) -> bool:
         if token_type == TokenType.ACCESS.value:
