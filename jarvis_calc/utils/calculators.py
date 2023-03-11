@@ -111,6 +111,8 @@ class UnitEconomyCalculator:
             "Log": (result_logistic_price, float(result_logistic_price) / mean_concurrent_cost),  # Логистика
             "Store": (result_storage_price, float(result_storage_price) / mean_concurrent_cost),  # Хранение
             "Margin": (result_product_margin, float(result_product_margin) / mean_concurrent_cost),  # Маржа в копейках
+            "RecommendedPrice": (buy_price + pack_price + result_commission + result_logistic_price +
+                                 result_storage_price + result_product_margin),
             "TProfit": (result_transit_profit, 1.0),  # Чистая прибыль с транзита
             "ROI": (result_transit_profit / investments, 1.0),  # ROI
             "TMargin": (result_transit_profit / revenue, 1.0)  # Маржа с транзита (%)
