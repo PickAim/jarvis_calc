@@ -2,10 +2,10 @@ from enum import Enum
 from functools import lru_cache
 
 from jorm.market.infrastructure import Warehouse, HandlerType, Address
-from jorm.market.person import Client, Account
+from jorm.market.person import Client, Account, User
 from jorm.market.service import Request
 
-from jarvis_calc.database_interactors import DBController
+from jarvis_calc.database_interactors.db_controller import DBController
 
 
 class FactoryKeywords(Enum):
@@ -23,6 +23,10 @@ class JORMFactory:
     @staticmethod
     def create_account(login: str, hashed_password: str, phone_number: str = "") -> Account:
         return Account(login, hashed_password, phone_number)
+
+    @staticmethod
+    def create_user(user_id=-1, name="UNNAMED") -> User:
+        return User(user_id, name)
 
     @lru_cache(maxsize=5)
     def warehouse(self, warehouse_name: str) -> Warehouse:

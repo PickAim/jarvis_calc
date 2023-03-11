@@ -1,9 +1,9 @@
+from jorm.jarvis.db_access import JORMCollector, UserInfoCollector
+from jorm.jarvis.db_update import UserInfoChanger, JORMChanger
 from jorm.market.infrastructure import Warehouse, Niche
 from jorm.market.person import Account, User
 from jorm.market.service import Request
 from jorm.server.token.types import TokenType
-
-from jarvis_calc.database_interactors.db_access import DBAccessProvider, DBUpdater
 
 users: dict[int, User] = {}
 users_by_login: dict[str, User] = {}
@@ -11,10 +11,10 @@ accounts: dict[str, Account] = {}
 user_tokens: dict[int, dict[str, dict[TokenType, str]]] = {}
 
 
-class TempDBAccess(DBAccessProvider):
+class TempUserInfoCollector(UserInfoCollector):
     def get_user_by_account(self, account: Account) -> User | None:
-        if account.login in users_by_login:
-            return users_by_login[account.login]
+        if account.email in users_by_login:
+            return users_by_login[account.email]
         return None
 
     def get_user_by_id(self, user_id: int) -> User | None:
@@ -27,6 +27,11 @@ class TempDBAccess(DBAccessProvider):
             return accounts[login]
         return None
 
+    def get_token_rnd_part(self, user_id: int, imprint: str, token_type: TokenType) -> str:
+        return user_tokens[user_id][imprint][token_type]
+
+
+class TempJORMCollector(JORMCollector):
     def get_niche(self, niche_name: str) -> Niche:
         return Niche("empty niche", {}, 0)
 
@@ -36,11 +41,8 @@ class TempDBAccess(DBAccessProvider):
     def get_all_warehouses(self) -> list[Warehouse]:
         pass
 
-    def get_token_rnd_part(self, user_id: int, imprint: str, token_type: TokenType) -> str:
-        return user_tokens[user_id][imprint][token_type]
 
-
-class TempDBUpdate(DBUpdater):
+class TempUserInfoChanger(UserInfoChanger):
     def update_session_tokens(self, old_update_token: str, new_access_token: str, new_update_token: str) -> None:
         for user_id in user_tokens:
             for imprint in user_tokens[user_id]:
@@ -60,9 +62,6 @@ class TempDBUpdate(DBUpdater):
         else:
             self.save_all_tokens(access_token, update_token, imprint_token, user)
 
-    def save_request(self, request: Request, user: User) -> None:
-        pass
-
     def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user: User) -> None:
         if user.user_id not in user_tokens:
             user_tokens[user.user_id] = {}
@@ -73,11 +72,17 @@ class TempDBUpdate(DBUpdater):
 
     def save_user_and_account(self, user: User, account: Account) -> None:
         users[user.user_id] = user
-        users_by_login[account.login] = user
-        accounts[account.login] = account
+        users_by_login[account.email] = user
+        accounts[account.email] = account
+
+    def delete_tokens_for_user(self, user: User, imprint_token: str):
+        user_tokens[user.user_id].pop(imprint_token, None)
+
+
+class TempJORMChanger(JORMChanger):
+
+    def save_request(self, request: Request, user: User) -> None:
+        pass
 
     def load_new_niche(self, niche_name: str) -> Niche:
         pass
-
-    def delete_tokens_for_user(self, user_id: int, imprint_token: str):
-        user_tokens[user_id].pop(imprint_token, None)

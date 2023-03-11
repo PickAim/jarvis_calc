@@ -1,6 +1,8 @@
 import json
-from jarvis_calc.files.file_constants import commission_json, commission_csv
+
 from jorm.market.infrastructure import HandlerType
+
+from jarvis_calc.files.file_constants import commission_json, commission_csv
 
 
 def resolve_commission_file(filepath: str) -> None:
