@@ -5,23 +5,26 @@ from jorm.market.person import Account, User
 from jorm.market.service import Request
 from jorm.server.token.types import TokenType
 
-from jarvis_calc.database_interactors.temp_db import TempUserInfoCollector, TempJORMCollector, TempUserInfoChanger, \
-    TempJORMChanger
-
 
 class DBController:
     instance = None
 
-    def __init__(self):
-        self.__user_info_collector: UserInfoCollector = TempUserInfoCollector()
-        self.__jorm_collector: JORMCollector = TempJORMCollector()
+    def __init__(self, user_info_collector: UserInfoCollector, jorm_collector: JORMCollector,
+                 user_info_changer: UserInfoChanger, jorm_changer: JORMChanger):
+        self.__user_info_collector: UserInfoCollector = user_info_collector
+        self.__jorm_collector: JORMCollector = jorm_collector
 
-        self.__user_info_changer: UserInfoChanger = TempUserInfoChanger()
-        self.__jorm_changer: JORMChanger = TempJORMChanger()
+        self.__user_info_changer: UserInfoChanger = user_info_changer
+        self.__jorm_changer: JORMChanger = jorm_changer
 
-    def __new__(cls):
+    def __new__(cls, user_info_collector: UserInfoCollector, jorm_collector: JORMCollector,
+                user_info_changer: UserInfoChanger, jorm_changer: JORMChanger):
         if cls.instance is None:
             cls.instance = super(DBController, cls).__new__(cls)
+            cls.instance.__user_info_collector = user_info_collector
+            cls.instance.__jorm_collector = jorm_collector
+            cls.instance.__user_info_changer = user_info_changer
+            cls.instance.__jorm_changer = jorm_changer
         return cls.instance
 
     def check_token_rnd_part(self, rnd_part_to_check: str, user_id: int, imprint: str, token_type: int) -> bool:
