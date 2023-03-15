@@ -1,9 +1,11 @@
+import datetime
+import math
 import unittest
 
-import numpy as np
 from jorm.market.infrastructure import Niche, Warehouse, Address, HandlerType
-from jorm.market.items import ProductHistory, Product
+from jorm.market.items import ProductHistory, Product, ProductHistoryUnit
 from jorm.market.person import Client, ClientInfo, ClientPrivilege
+from jorm.support.types import StorageDict, ProductSpecifyDict
 
 from jarvis_calc.utils.calculators import FrequencyCalculator, UnitEconomyCalculator
 from jarvis_calc.utils.temporary import get_commission_for
@@ -48,20 +50,37 @@ class CalculatorsTest(unittest.TestCase):
                                                "Подстаканники электрические", str(HandlerType.MARKETPLACE))
         self.assertEqual(0.17, commission)
 
-    @staticmethod
-    def create_test_niche() -> Niche:
+    def create_test_niche(self) -> Niche:
         niche_commissions_dict: dict[HandlerType, float] = {
             HandlerType.MARKETPLACE: 0.17,
             HandlerType.PARTIAL_CLIENT: 0.15,
             HandlerType.CLIENT: 0.10
         }
-        niche: Niche = Niche("Test niche", niche_commissions_dict, 0.1,
-                             [Product("prod1", 15, 1, ProductHistory(),
-                                      width=0.15, height=0.3, depth=0.1)])
         niche_cost_data = cost_data.copy()
         niche_cost_data.sort()
-        niche.cost_data = np.array(niche_cost_data)
-        return niche
+        products = []
+
+        for i, cost in enumerate(cost_data):
+            product_specify_dict = ProductSpecifyDict()
+            product_specify_dict['t'] = self.leftover_func(cost)
+            before_trade_storage_dict = StorageDict()
+            before_trade_storage_dict[1] = product_specify_dict
+            products.append(Product(f'prod{i}', cost, i,
+                                    history=ProductHistory([
+                                        ProductHistoryUnit(1, datetime.datetime.utcnow(), before_trade_storage_dict),
+                                        ProductHistoryUnit(3, datetime.datetime.utcnow(), StorageDict())]),
+                                    width=0.15, height=0.3, depth=0.1))
+        return Niche("Test niche", niche_commissions_dict, 0.1, products)
+
+    @staticmethod
+    def leftover_func(x) -> int:
+        return int(- math.sin((x + 300_000) * 0.00001 - math.pi / 30) / (x + 200_000) * 7_500_000)
+
+    def test_green_zone(self):
+        calculator = FrequencyCalculator()
+        niche: Niche = self.create_test_niche()
+        x, y = calculator.get_frequency_stats(niche)
+        calculator.get_green_trade_zone(niche, x, y)
 
 
 if __name__ == '__main__':

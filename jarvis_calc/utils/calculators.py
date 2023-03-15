@@ -1,6 +1,10 @@
+import datetime
+
 import numpy as np
 from jorm.market.infrastructure import Niche, Warehouse
 from jorm.market.person import Client
+from jorm.support.constants import DAYS_IN_MONTH
+from matplotlib import pyplot as plot
 from numpy import ndarray
 
 
@@ -57,13 +61,26 @@ class FrequencyCalculator:
                 break
         return list(map(int, keys)), list(map(int, frequencies))
 
+    @staticmethod
+    def get_green_trade_zone(niche: Niche, freq_keys: list[float],
+                             frequencies: list[int], from_date: datetime.datetime = datetime.datetime.utcnow()):
+        products = niche.products
+        trade_frequencies: list[int] = [0 for _ in range(len(frequencies))]
+        sorted_products = sorted(products, key=lambda prod: prod.cost, reverse=True)
+        j = len(freq_keys) - 1
+        for i, product in enumerate(sorted_products):
+            if product.cost < freq_keys[j]:
+                j -= 1
+            trade_frequencies[j] = product.history.get_last_month_trade_count(from_date)
+
+        plot.plot(freq_keys, trade_frequencies)
+        plot.plot(freq_keys, frequencies)
+        plot.show()
+
 
 class UnitEconomyCalculator:
-    def __init__(self):
-        self.__SAMPLES_COUNT: int = 20
-        self.__MONTH: int = 30
-
-    def calc_unit_economy(self, buy_price: int,
+    @staticmethod
+    def calc_unit_economy(buy_price: int,
                           pack_price: int,
                           niche: Niche,
                           warehouse: Warehouse,
@@ -86,7 +103,7 @@ class UnitEconomyCalculator:
 
         if transit_count > 0:
             result_logistic_price += (transit_price + market_place_transit_price) / transit_count
-            result_storage_price = self.__MONTH * result_storage_price
+            result_storage_price = DAYS_IN_MONTH * result_storage_price
 
             volume: float = niche.get_mean_product_volume()
             logistic_expanses: int = market_place_transit_price
