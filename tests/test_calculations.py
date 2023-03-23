@@ -8,7 +8,7 @@ from jorm.market.person import Client, ClientInfo, ClientPrivilege
 from jorm.support.types import StorageDict, ProductSpecifyDict
 
 from jarvis_calc.utils.calculators import FrequencyCalculator, UnitEconomyCalculator
-from jarvis_calc.utils.temporary import get_commission_for
+from jarvis_calc.utils.temporary import get_commission_for, get_return_percent_for
 from tests.test_data import cost_data
 
 
@@ -45,10 +45,12 @@ class CalculatorsTest(unittest.TestCase):
                                               transit_price, transit_count, marketplace_transit_price)
         self.assertEqual(69_57, result["Margin"][0])
 
-    def test_commission_load(self):
+    def test_niche_info_load(self):
         commission: float = get_commission_for("Автомобильные товары",
                                                "Подстаканники электрические", str(HandlerType.MARKETPLACE))
         self.assertEqual(0.17, commission)
+        return_percent: float = get_return_percent_for("Автомобильные товары", "Подстаканники электрические")
+        self.assertEqual(0.1, return_percent)
 
     def create_test_niche(self) -> Niche:
         niche_commissions_dict: dict[HandlerType, float] = {
