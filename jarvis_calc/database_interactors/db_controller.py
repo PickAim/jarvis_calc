@@ -61,8 +61,11 @@ class DBController:
     def get_user_by_id(self, user_id: int) -> User:
         return self.__user_info_collector.get_user_by_id(user_id)
 
-    def get_account(self, login: str) -> Account:
-        return self.__user_info_collector.get_account(login)
+    def get_account_by_email(self, email: str) -> Account:
+        return self.__user_info_collector.get_account_by_email(email)
+
+    def get_account_by_phone(self, phone: str) -> Account:
+        return self.__user_info_collector.get_account_by_phone(phone)
 
     def get_niche(self, niche_name: str) -> Niche:
         return self.__jorm_collector.get_niche(niche_name)
