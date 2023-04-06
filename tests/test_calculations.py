@@ -5,7 +5,7 @@ import unittest
 from jorm.market.infrastructure import Niche, Warehouse, Address, HandlerType
 from jorm.market.items import ProductHistory, Product, ProductHistoryUnit
 from jorm.market.person import Client, ClientInfo, ClientPrivilege
-from jorm.support.types import StorageDict, ProductSpecifyDict
+from jorm.support.types import StorageDict, SpecifiedLeftover
 
 from jarvis_calc.utils.calculators import FrequencyCalculator, UnitEconomyCalculator
 from jarvis_calc.utils.temporary import get_commission_for, get_return_percent_for
@@ -63,11 +63,10 @@ class CalculatorsTest(unittest.TestCase):
         products = []
 
         for i, cost in enumerate(cost_data):
-            product_specify_dict = ProductSpecifyDict()
-            product_specify_dict['t'] = self.leftover_func(cost)
+            spec_leftovers: list[SpecifiedLeftover] = [SpecifiedLeftover("second", self.leftover_func(cost))]
             before_trade_storage_dict = StorageDict()
-            before_trade_storage_dict[1] = product_specify_dict
-            products.append(Product(f'prod{i}', cost, i,
+            before_trade_storage_dict[1] = spec_leftovers
+            products.append(Product(f'prod{i}', cost, i, 4.0,
                                     history=ProductHistory([
                                         ProductHistoryUnit(1, datetime.datetime.utcnow(), before_trade_storage_dict),
                                         ProductHistoryUnit(3, datetime.datetime.utcnow(), StorageDict())]),
