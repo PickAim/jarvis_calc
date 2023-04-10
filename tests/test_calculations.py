@@ -43,7 +43,7 @@ class CalculatorsTest(unittest.TestCase):
         client = Client(name="client", privilege=ClientPrivilege.BASIC, client_info=ClientInfo(profit_tax=0.06))
         result = calculator.calc_unit_economy(buy, pack, niche, warehouse, client,
                                               transit_price, transit_count, marketplace_transit_price)
-        self.assertEqual(69_57, result["margin"][0])
+        self.assertEqual(69_57, result["margin"])
 
     def test_niche_info_load(self):
         commission: float = get_commission_for("Автомобильные товары",

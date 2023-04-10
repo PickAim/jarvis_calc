@@ -87,7 +87,7 @@ class UnitEconomyCalculator:
                           client: Client,
                           transit_price: int = 0.0,
                           transit_count: int = 0.0,
-                          market_place_transit_price: int = 0.0) -> dict:
+                          market_place_transit_price: int = 0.0) -> dict[str, int]:
         niche_commission: float = warehouse.get_niche_commission(niche)
         unit_cost: int = (buy_price + pack_price)
         mean_concurrent_cost: int = niche.get_mean_concurrent_cost(unit_cost,
@@ -122,16 +122,15 @@ class UnitEconomyCalculator:
                                       - result_logistic_price - result_storage_price - unit_cost)
 
         return {
-            "product_cost": (buy_price, float(buy_price) / mean_concurrent_cost),  # Закупочная себестоимость
-            "pack_cost": (pack_price, float(pack_price) / mean_concurrent_cost),  # Упаковка
-            "marketplace_commission": (result_commission, float(result_commission) / mean_concurrent_cost),
-            # Комиссия маркетплейса
-            "logistic_price": (result_logistic_price, float(result_logistic_price) / mean_concurrent_cost),  # Логистика
-            "storage_price": (result_storage_price, float(result_storage_price) / mean_concurrent_cost),  # Хранение
-            "margin": (result_product_margin, float(result_product_margin) / mean_concurrent_cost),  # Маржа в копейках
+            "product_cost": buy_price,  # Закупочная себестоимость
+            "pack_cost": pack_price,  # Упаковка
+            "marketplace_commission": result_commission,  # Комиссия маркетплейса
+            "logistic_price": result_logistic_price,  # Логистика
+            "storage_price": result_storage_price,  # Хранение
+            "margin": result_product_margin,  # Маржа в копейках
             "recommended_price": (buy_price + pack_price + result_commission + result_logistic_price +
                                   result_storage_price + result_product_margin),
-            "transit_profit": (result_transit_profit, 1.0),  # Чистая прибыль с транзита
-            "roi": (result_transit_profit / investments, 1.0),  # ROI
-            "transit_margin": (result_transit_profit / revenue, 1.0)  # Маржа с транзита (%)
+            "transit_profit": result_transit_profit,  # Чистая прибыль с транзита
+            "roi": result_transit_profit // investments,  # ROI
+            "transit_margin": result_transit_profit // revenue,  # Маржа с транзита (%)
         }
