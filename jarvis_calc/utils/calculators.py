@@ -87,7 +87,11 @@ class UnitEconomyCalculator:
                           client: Client,
                           transit_price: int = 0.0,
                           transit_count: int = 0.0,
+<<<<<<< Updated upstream
                           market_place_transit_price: int = 0.0) -> dict[str, int | float]:
+=======
+                          market_place_transit_price: int = 0.0) -> dict[str, int]:
+>>>>>>> Stashed changes
         niche_commission: float = warehouse.get_niche_commission(niche)
         unit_cost: int = (buy_price + pack_price)
         mean_concurrent_cost: int = niche.get_mean_concurrent_cost(unit_cost,
@@ -131,6 +135,11 @@ class UnitEconomyCalculator:
             "recommended_price": (buy_price + pack_price + result_commission + result_logistic_price +
                                   result_storage_price + result_product_margin),
             "transit_profit": result_transit_profit,  # Чистая прибыль с транзита
+<<<<<<< Updated upstream
             "roi": result_transit_profit / investments,  # ROI
             "transit_margin": result_transit_profit / revenue,  # Маржа с транзита (%)
+=======
+            "roi": result_transit_profit // investments,  # ROI
+            "transit_margin": result_transit_profit // revenue  # Маржа с транзита (%)
+>>>>>>> Stashed changes
         }
