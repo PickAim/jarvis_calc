@@ -71,5 +71,9 @@ class DBController:
     def get_all_warehouses(self) -> list[Warehouse]:
         return self.__jorm_collector.get_all_warehouses()
 
+    def get_all_unit_economy_results(self, user: User) \
+            -> list[tuple[UnitEconomyRequest, UnitEconomyResult, RequestInfo]]:
+        return self.__jorm_collector.get_all_unit_economy_results(user)
+
     def delete_tokens_for_user(self, user: User, imprint_token: str):
         self.__user_info_changer.delete_tokens_for_user(user, imprint_token)
