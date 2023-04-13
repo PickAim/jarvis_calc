@@ -75,5 +75,9 @@ class DBController:
             -> list[tuple[UnitEconomyRequest, UnitEconomyResult, RequestInfo]]:
         return self.__jorm_collector.get_all_unit_economy_results(user)
 
+    def get_all_frequency_results(self, user: User) \
+            -> list[tuple[FrequencyRequest, FrequencyResult, RequestInfo]]:
+        return self.__jorm_collector.get_all_frequency_results(user)
+
     def delete_tokens_for_user(self, user: User, imprint_token: str):
         self.__user_info_changer.delete_tokens_for_user(user, imprint_token)
