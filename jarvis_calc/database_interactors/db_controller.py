@@ -81,3 +81,10 @@ class DBController:
 
     def delete_tokens_for_user(self, user: User, imprint_token: str):
         self.__user_info_changer.delete_tokens_for_user(user, imprint_token)
+
+    def delete_unit_economy_request_for_user(self, request_id: int, user: User) -> None:
+        self.__jorm_changer.delete_unit_economy_request(request_id, user)
+
+    def delete_frequency_request_for_user(self, request_id: int, user: User) -> None:
+        self.__jorm_changer.delete_frequency_request(request_id, user)
+       
