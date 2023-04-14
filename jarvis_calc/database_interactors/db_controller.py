@@ -17,16 +17,6 @@ class DBController:
         self.__user_info_changer: UserInfoChanger = user_info_changer
         self.__jorm_changer: JORMChanger = jorm_changer
 
-    def __new__(cls, user_info_collector: UserInfoCollector, jorm_collector: JORMCollector,
-                user_info_changer: UserInfoChanger, jorm_changer: JORMChanger):
-        if cls.instance is None:
-            cls.instance = super(DBController, cls).__new__(cls)
-            cls.instance.__user_info_collector = user_info_collector
-            cls.instance.__jorm_collector = jorm_collector
-            cls.instance.__user_info_changer = user_info_changer
-            cls.instance.__jorm_changer = jorm_changer
-        return cls.instance
-
     def check_token_rnd_part(self, rnd_part_to_check: str, user_id: int, imprint: str, token_type: int) -> bool:
         if token_type == TokenType.ACCESS.value:
             rnd_part_from_db: str = self.__user_info_collector.get_token_rnd_part(user_id, imprint, TokenType.ACCESS)
@@ -61,11 +51,11 @@ class DBController:
     def get_user_by_id(self, user_id: int) -> User:
         return self.__user_info_collector.get_user_by_id(user_id)
 
-    def get_account_by_email(self, email: str) -> Account:
-        return self.__user_info_collector.get_account_by_email(email)
-
-    def get_account_by_phone(self, phone: str) -> Account:
-        return self.__user_info_collector.get_account_by_phone(phone)
+    def get_account(self, email: str, phone: str) -> Account | None:
+        account_and_id = self.__user_info_collector.get_account_and_id(email, phone)
+        if account_and_id is not None:
+            return account_and_id[0]
+        return None
 
     def get_niche(self, niche_name: str) -> Niche:
         return self.__jorm_collector.get_niche(niche_name)
