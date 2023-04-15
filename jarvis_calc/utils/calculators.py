@@ -111,7 +111,7 @@ class UnitEconomyCalculator:
                 logistic_expanses = \
                     warehouse.calculate_logistic_price_for_one(volume, niche.returned_percent) * transit_count
 
-            revenue = mean_concurrent_cost * transit_count
+            revenue = mean_concurrent_cost * transit_count or 1
             investments = unit_cost * transit_count
             marketplace_expenses: int = int(revenue * niche_commission + logistic_expanses
                                             + warehouse.calculate_storage_price(volume) * transit_count)
