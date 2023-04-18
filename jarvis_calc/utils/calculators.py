@@ -87,7 +87,7 @@ class UnitEconomyCalculator:
                           client: Client,
                           transit_price: int = 0.0,
                           transit_count: int = 0.0,
-                          market_place_transit_price: int = 0.0) -> dict:
+                          market_place_transit_price: int = 0.0) -> dict[str, int | float]:
         niche_commission: float = warehouse.get_niche_commission(niche)
         unit_cost: int = (buy_price + pack_price)
         mean_concurrent_cost: int = niche.get_mean_concurrent_cost(unit_cost,
@@ -95,14 +95,14 @@ class UnitEconomyCalculator:
                                                                    warehouse.basic_storage_commission)
         result_commission: int = int(mean_concurrent_cost * niche_commission)
         result_logistic_price: int = warehouse.basic_logistic_to_customer_commission
-        result_storage_price = warehouse.basic_storage_commission
+        result_storage_price: int = warehouse.basic_storage_commission
 
         revenue: int = 1
         investments: int = 1
         result_transit_profit: int = 0
 
         if transit_count > 0:
-            result_logistic_price += (transit_price + market_place_transit_price) / transit_count
+            result_logistic_price += (transit_price + market_place_transit_price) // transit_count
             result_storage_price = DAYS_IN_MONTH * result_storage_price
 
             volume: float = niche.get_mean_product_volume()
@@ -111,7 +111,7 @@ class UnitEconomyCalculator:
                 logistic_expanses = \
                     warehouse.calculate_logistic_price_for_one(volume, niche.returned_percent) * transit_count
 
-            revenue = mean_concurrent_cost * transit_count
+            revenue = mean_concurrent_cost * transit_count or 1
             investments = unit_cost * transit_count
             marketplace_expenses: int = int(revenue * niche_commission + logistic_expanses
                                             + warehouse.calculate_storage_price(volume) * transit_count)
@@ -122,15 +122,15 @@ class UnitEconomyCalculator:
                                       - result_logistic_price - result_storage_price - unit_cost)
 
         return {
-            "Pcost": (buy_price, float(buy_price) / mean_concurrent_cost),  # Закупочная себестоимость
-            "Pack": (pack_price, float(pack_price) / mean_concurrent_cost),  # Упаковка
-            "Mcomm": (result_commission, float(result_commission) / mean_concurrent_cost),  # Комиссия маркетплейса
-            "Log": (result_logistic_price, float(result_logistic_price) / mean_concurrent_cost),  # Логистика
-            "Store": (result_storage_price, float(result_storage_price) / mean_concurrent_cost),  # Хранение
-            "Margin": (result_product_margin, float(result_product_margin) / mean_concurrent_cost),  # Маржа в копейках
-            "RecommendedPrice": (buy_price + pack_price + result_commission + result_logistic_price +
-                                 result_storage_price + result_product_margin),
-            "TProfit": (result_transit_profit, 1.0),  # Чистая прибыль с транзита
-            "ROI": (result_transit_profit / investments, 1.0),  # ROI
-            "TMargin": (result_transit_profit / revenue, 1.0)  # Маржа с транзита (%)
+            "product_cost": buy_price,  # Закупочная себестоимость
+            "pack_cost": pack_price,  # Упаковка
+            "marketplace_commission": result_commission,  # Комиссия маркетплейса
+            "logistic_price": result_logistic_price,  # Логистика
+            "storage_price": result_storage_price,  # Хранение
+            "margin": result_product_margin,  # Маржа в копейках
+            "recommended_price": (buy_price + pack_price + result_commission + result_logistic_price +
+                                  result_storage_price + result_product_margin),
+            "transit_profit": result_transit_profit,  # Чистая прибыль с транзита
+            "roi": result_transit_profit / investments,  # ROI
+            "transit_margin": result_transit_profit / revenue,  # Маржа с транзита (%)
         }

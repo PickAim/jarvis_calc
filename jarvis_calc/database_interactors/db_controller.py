@@ -2,7 +2,7 @@ from jorm.jarvis.db_access import UserInfoCollector, JORMCollector
 from jorm.jarvis.db_update import UserInfoChanger, JORMChanger
 from jorm.market.infrastructure import Warehouse, Niche
 from jorm.market.person import Account, User
-from jorm.market.service import Request
+from jorm.market.service import UnitEconomyRequest, UnitEconomyResult, FrequencyResult, FrequencyRequest, RequestInfo
 from jorm.server.token.types import TokenType
 
 
@@ -33,8 +33,13 @@ class DBController:
                                          user: User) -> None:
         self.__user_info_changer.update_session_tokens_by_imprint(access_token, update_token, imprint_token, user)
 
-    def save_request(self, request: Request, user: User) -> None:
-        self.__jorm_changer.save_request(request, user)
+    def save_unit_economy_request(self, request: UnitEconomyRequest, result: UnitEconomyResult,
+                                  request_info: RequestInfo, user: User) -> int:
+        return self.__jorm_changer.save_unit_economy_request(request, result, request_info, user)
+
+    def save_frequency_request(self, request: FrequencyRequest, result: FrequencyResult,
+                               request_info: RequestInfo, user: User) -> int:
+        return self.__jorm_changer.save_frequency_request(request, result, request_info, user)
 
     def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user: User) -> None:
         self.__user_info_changer.save_all_tokens(access_token, update_token, imprint_token, user)
@@ -66,5 +71,20 @@ class DBController:
     def get_all_warehouses(self) -> list[Warehouse]:
         return self.__jorm_collector.get_all_warehouses()
 
+    def get_all_unit_economy_results(self, user: User) \
+            -> list[tuple[UnitEconomyRequest, UnitEconomyResult, RequestInfo]]:
+        return self.__jorm_collector.get_all_unit_economy_results(user)
+
+    def get_all_frequency_results(self, user: User) \
+            -> list[tuple[FrequencyRequest, FrequencyResult, RequestInfo]]:
+        return self.__jorm_collector.get_all_frequency_results(user)
+
     def delete_tokens_for_user(self, user: User, imprint_token: str):
         self.__user_info_changer.delete_tokens_for_user(user, imprint_token)
+
+    def delete_unit_economy_request_for_user(self, request_id: int, user: User) -> None:
+        self.__jorm_changer.delete_unit_economy_request(request_id, user)
+
+    def delete_frequency_request_for_user(self, request_id: int, user: User) -> None:
+        self.__jorm_changer.delete_frequency_request(request_id, user)
+       
