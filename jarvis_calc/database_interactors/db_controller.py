@@ -1,6 +1,7 @@
 from jorm.jarvis.db_access import UserInfoCollector, JORMCollector
 from jorm.jarvis.db_update import UserInfoChanger, JORMChanger
 from jorm.market.infrastructure import Warehouse, Niche
+from jorm.market.items import Product
 from jorm.market.person import Account, User
 from jorm.market.service import UnitEconomyRequest, UnitEconomyResult, FrequencyResult, FrequencyRequest, RequestInfo
 from jorm.server.token.types import TokenType
@@ -78,6 +79,9 @@ class DBController:
     def get_all_frequency_results(self, user: User) \
             -> list[tuple[FrequencyRequest, FrequencyResult, RequestInfo]]:
         return self.__jorm_collector.get_all_frequency_results(user)
+
+    def get_products_by_user(self, user: User) -> list[Product]:
+        return self.__jorm_collector.get_products_by_user(user)
 
     def delete_tokens_for_user(self, user: User, imprint_token: str):
         self.__user_info_changer.delete_tokens_for_user(user, imprint_token)
