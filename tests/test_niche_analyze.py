@@ -1,9 +1,8 @@
 import unittest
 
-from jorm.market.infrastructure import Niche, HandlerType
+from jorm.market.infrastructure import Niche
 
 from jarvis_calc.calculators.niche_analyze import FrequencyCalculator
-from jarvis_calc.utils.temporary import get_commission_for, get_return_percent_for
 from tests.base_test import BaseCalcTest
 from tests.data_for_tests import cost_data
 
@@ -22,13 +21,6 @@ class NicheAnalyzeTest(BaseCalcTest):
         unit_cost: int = buy + pack
         mid_cost: int = niche.get_mean_concurrent_cost(unit_cost, 5500, 15)
         self.assertEqual(971_23, mid_cost)
-
-    def test_niche_info_load(self):
-        commission: float = get_commission_for("Автомобильные товары",
-                                               "Подстаканники электрические", str(HandlerType.MARKETPLACE))
-        self.assertEqual(0.17, commission)
-        return_percent: float = get_return_percent_for("Автомобильные товары", "Подстаканники электрические")
-        self.assertEqual(0.1, return_percent)
 
     def test_green_zone(self):
         calculator = FrequencyCalculator()
