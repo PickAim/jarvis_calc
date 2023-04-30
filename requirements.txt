@@ -1,3 +1,2 @@
-jorm@ git+https://PickAim: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@github.com/PickAim/jorm.git
 numpy==1.24.1
 matplotlib==3.6.2
