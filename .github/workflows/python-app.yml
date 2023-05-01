@@ -23,9 +23,9 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.11"
-      - name: Install Jarvis dependencies
+      - name: Set Up PickAim authorize
         run: |
-          pip install git+https://PickAim:${{secrets.PICK_AIM_TOKEN}}@github.com/PickAim/jorm.git
+          git config --global url."https://${{ secrets.PICK_AIM_TOKEN }}@github".insteadOf https://github
       - name: Install requirements
         run: |
           python -m pip install --upgrade pip
