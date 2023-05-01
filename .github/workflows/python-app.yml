@@ -25,7 +25,7 @@ jobs:
           python-version: "3.11"
       - name: Set Up PickAim authorize
         run: |
-          git config --global url."https://${{ secrets.PICK_AIM_TOKEN }}@github".insteadOf https://github
+          git config --global url."https://PickAim:${{ secrets.PICK_AIM_TOKEN }}@github.com".insteadOf https://github.com
       - name: Install requirements
         run: |
           python -m pip install --upgrade pip
