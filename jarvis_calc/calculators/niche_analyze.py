@@ -2,6 +2,7 @@ import datetime
 
 import numpy as np
 from jorm.market.infrastructure import Niche
+from jorm.support.constants import DAYS_IN_MONTH
 from numpy import ndarray
 
 
@@ -19,7 +20,7 @@ class FrequencyCalculator:
             result += freq
         return int(result / len(clear_frequency))
 
-    def calculate(self, niche: Niche) -> tuple[list[float], list[int]]:
+    def calculate_niche_hist(self, niche: Niche) -> tuple[list[float], list[int]]:
         cost_data: ndarray[float] = niche.cost_data.copy()
         n_samples: int = int(len(cost_data) * 0.1)
         if len(cost_data) <= 0:
@@ -57,6 +58,35 @@ class FrequencyCalculator:
             else:
                 break
         return list(map(int, keys)), list(map(int, frequencies))
+
+    @staticmethod
+    def calculate_niche_characteristic(niche: Niche) -> dict[str, int | float]:
+        result_card_count: int = len(niche.products)
+        result_products_with_trades_count = 0
+        result_products_trade_count = 0
+        traded_products_profit = 0
+        rating_count = 0
+
+        for product in niche.products:
+            product_trade_count = product.history.get_last_month_trade_count()
+            rating_count += product.rating
+            if product_trade_count > 0:
+                result_products_with_trades_count += 1
+                result_products_trade_count += product_trade_count
+                traded_products_profit += product_trade_count * product.cost
+        result_overall_profit = traded_products_profit
+
+        return {
+            'card_count': result_card_count,
+            'niche_profit': result_overall_profit,
+            'card_trade_count': result_products_trade_count,
+            'mean_card_rating': rating_count / result_card_count,
+            'card_with_trades_count': result_products_with_trades_count,
+            'month_mean_niche_profit': int(result_overall_profit / DAYS_IN_MONTH),
+            'month_mean_trade_count': int(result_products_trade_count / DAYS_IN_MONTH),
+            'mean_traded_card_cost': int(result_overall_profit / result_products_trade_count),
+            'month_mean_niche_profit_per_card': int(result_overall_profit / result_card_count)
+        }
 
     @staticmethod
     def get_green_trade_zone(niche: Niche, freq_keys: list[float],
