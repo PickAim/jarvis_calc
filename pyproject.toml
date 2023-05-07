@@ -8,5 +8,5 @@ version = "0.0.24"
 dependencies = [
     "numpy",
     "matplotlib",
-    "jorm @ git+https://github.com/PickAim/jorm.git@v.0.0.23",
+    "jorm @ git+https://github.com/PickAim/jorm.git@v.0.0.25",
 ]
