@@ -25,9 +25,10 @@ class NicheAnalyzeTest(BaseCalcTest):
     def test_niche_analyze_parameters(self):
         calculator = NicheAnalyzeCalculator()
         niche: Niche = self.create_test_niche()
+        result = calculator.calculate_niche_characteristic(niche)
         self.assertEqual({
             'card_count': 4114,
-            'niche_profit': 7558992306.683339,
+            'niche_profit': 7558992306,
             'card_trade_count': 54972,
             'mean_card_rating': 4.0,
             'card_with_trades_count': 3875,
@@ -36,7 +37,7 @@ class NicheAnalyzeTest(BaseCalcTest):
             'mean_traded_card_cost': 137506,
             'month_mean_niche_profit_per_card': 1837382,
             'monopoly_percent': 0.030747309758626423,
-            'maximum_profit_idx': 1}, calculator.calculate_niche_characteristic(niche))
+            'maximum_profit_idx': 1}, result)
 
     def test_green_zone(self):
         calculator = NicheAnalyzeCalculator()
