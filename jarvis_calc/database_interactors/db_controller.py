@@ -27,12 +27,13 @@ class DBController:
             raise Exception(str(type(DBController)) + ": unexpected token type")
         return rnd_part_from_db == rnd_part_to_check
 
-    def update_session_tokens(self, old_update_token: str, new_access_token: str, new_update_token: str) -> None:
-        self.__user_info_changer.update_session_tokens(old_update_token, new_access_token, new_update_token)
+    def update_session_tokens(self, user_id: int, old_update_token: str,
+                              new_access_token: str, new_update_token: str) -> None:
+        self.__user_info_changer.update_session_tokens(user_id, old_update_token, new_access_token, new_update_token)
 
     def update_session_tokens_by_imprint(self, access_token: str, update_token: str, imprint_token: str,
-                                         user: User) -> None:
-        self.__user_info_changer.update_session_tokens_by_imprint(access_token, update_token, imprint_token, user)
+                                         user_id: int) -> None:
+        self.__user_info_changer.update_session_tokens_by_imprint(access_token, update_token, imprint_token, user_id)
 
     def save_unit_economy_request(self, request: UnitEconomyRequest, result: UnitEconomyResult,
                                   request_info: RequestInfo, user: User) -> int:
@@ -42,8 +43,8 @@ class DBController:
                                request_info: RequestInfo, user: User) -> int:
         return self.__jorm_changer.save_frequency_request(request, result, request_info, user)
 
-    def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user: User) -> None:
-        self.__user_info_changer.save_all_tokens(access_token, update_token, imprint_token, user)
+    def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user_id: int) -> None:
+        self.__user_info_changer.save_all_tokens(access_token, update_token, imprint_token, user_id)
 
     def save_user_and_account(self, user: User, account: Account) -> None:
         self.__user_info_changer.save_user_and_account(user, account)
@@ -63,8 +64,8 @@ class DBController:
             return account_and_id[0]
         return None
 
-    def get_niche(self, niche_name: str) -> Niche:
-        return self.__jorm_collector.get_niche(niche_name)
+    def get_niche(self, niche_name: str, marketplace_id: int) -> Niche:
+        return self.__jorm_collector.get_niche(niche_name, marketplace_id)
 
     def get_warehouse(self, warehouse_name: str) -> Warehouse:
         return self.__jorm_collector.get_warehouse(warehouse_name)

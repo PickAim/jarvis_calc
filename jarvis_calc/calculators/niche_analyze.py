@@ -87,7 +87,7 @@ class NicheAnalyzeCalculator:
         result_overall_profit = traded_products_profit
         return {
             'card_count': result_card_count,
-            'niche_profit': result_overall_profit,
+            'niche_profit': int(result_overall_profit),
             'card_trade_count': result_products_trade_count,
             'mean_card_rating': rating_count / result_card_count,
             'card_with_trades_count': result_products_with_trades_count,
