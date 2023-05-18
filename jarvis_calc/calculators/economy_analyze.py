@@ -1,5 +1,5 @@
 from jorm.market.infrastructure import Niche, Warehouse
-from jorm.market.person import Client
+from jorm.market.person import User
 from jorm.support.constants import DAYS_IN_MONTH
 
 
@@ -9,7 +9,7 @@ class UnitEconomyCalculator:
                   pack_price: int,
                   niche: Niche,
                   warehouse: Warehouse,
-                  client: Client,
+                  user: User,
                   transit_price: int = 0.0,
                   transit_count: int = 0.0,
                   market_place_transit_price: int = 0.0) -> dict[str, int | float]:
@@ -41,7 +41,7 @@ class UnitEconomyCalculator:
             marketplace_expenses: int = int(revenue * niche_commission + logistic_expanses
                                             + warehouse.calculate_storage_price(volume) * transit_count)
             result_transit_profit = revenue - investments - marketplace_expenses - int(
-                revenue * client.get_profit_tax())
+                revenue * user.get_profit_tax())
 
         result_product_margin: int = (mean_concurrent_cost - result_commission
                                       - result_logistic_price - result_storage_price - unit_cost)
