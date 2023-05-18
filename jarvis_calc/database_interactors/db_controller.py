@@ -36,12 +36,12 @@ class DBController:
         self.__user_info_changer.update_session_tokens_by_imprint(access_token, update_token, imprint_token, user_id)
 
     def save_unit_economy_request(self, request: UnitEconomyRequest, result: UnitEconomyResult,
-                                  request_info: RequestInfo, user: User) -> int:
-        return self.__jorm_changer.save_unit_economy_request(request, result, request_info, user)
+                                  request_info: RequestInfo, user_id: int) -> int:
+        return self.__jorm_changer.save_unit_economy_request(request, result, request_info, user_id)
 
     def save_frequency_request(self, request: FrequencyRequest, result: FrequencyResult,
-                               request_info: RequestInfo, user: User) -> int:
-        return self.__jorm_changer.save_frequency_request(request, result, request_info, user)
+                               request_info: RequestInfo, user_id: int) -> int:
+        return self.__jorm_changer.save_frequency_request(request, result, request_info, user_id)
 
     def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user_id: int) -> None:
         self.__user_info_changer.save_all_tokens(access_token, update_token, imprint_token, user_id)
@@ -73,23 +73,22 @@ class DBController:
     def get_all_warehouses(self) -> list[Warehouse]:
         return self.__jorm_collector.get_all_warehouses()
 
-    def get_all_unit_economy_results(self, user: User) \
+    def get_all_unit_economy_results(self, user_id: int) \
             -> list[tuple[UnitEconomyRequest, UnitEconomyResult, RequestInfo]]:
-        return self.__jorm_collector.get_all_unit_economy_results(user)
+        return self.__jorm_collector.get_all_unit_economy_results(user_id)
 
-    def get_all_frequency_results(self, user: User) \
+    def get_all_frequency_results(self, user_id: int) \
             -> list[tuple[FrequencyRequest, FrequencyResult, RequestInfo]]:
-        return self.__jorm_collector.get_all_frequency_results(user)
+        return self.__jorm_collector.get_all_frequency_results(user_id)
 
-    def get_products_by_user(self, user: User) -> list[Product]:
-        return self.__jorm_collector.get_products_by_user(user)
+    def get_products_by_user(self, user_id: int) -> list[Product]:
+        return self.__jorm_collector.get_products_by_user(user_id)
 
-    def delete_tokens_for_user(self, user: User, imprint_token: str):
-        self.__user_info_changer.delete_tokens_for_user(user, imprint_token)
+    def delete_tokens_for_user(self, user_id: int, imprint_token: str):
+        self.__user_info_changer.delete_tokens_for_user(user_id, imprint_token)
 
-    def delete_unit_economy_request_for_user(self, request_id: int, user: User) -> None:
-        self.__jorm_changer.delete_unit_economy_request(request_id, user)
+    def delete_unit_economy_request_for_user(self, request_id: int, user_id: int) -> None:
+        self.__jorm_changer.delete_unit_economy_request(request_id, user_id)
 
-    def delete_frequency_request_for_user(self, request_id: int, user: User) -> None:
-        self.__jorm_changer.delete_frequency_request(request_id, user)
-       
+    def delete_frequency_request_for_user(self, request_id: int, user_id: int) -> None:
+        self.__jorm_changer.delete_frequency_request(request_id, user_id)
