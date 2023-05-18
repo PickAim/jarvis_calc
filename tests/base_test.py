@@ -33,18 +33,18 @@ class BaseCalcTest(unittest.TestCase):
         niche_cost_data = cost_data.copy()
         niche_cost_data.sort()
         products = []
-
+        niche_name = "Test niche"
         for i, cost in enumerate(cost_data):
             spec_leftovers: list[SpecifiedLeftover] = [SpecifiedLeftover("second", self.leftover_func(cost))]
             before_trade_storage_dict = StorageDict()
             before_trade_storage_dict[1] = spec_leftovers
-            products.append(Product(f'prod{i}', cost, i, 4.0, "brand", "seller",
+            products.append(Product(f'prod{i}', cost, i, 4.0, "brand", "seller", niche_name, "default_category",
                                     history=ProductHistory([
                                         ProductHistoryUnit(1, datetime.utcnow(), before_trade_storage_dict),
                                         ProductHistoryUnit(3, datetime.utcnow(), StorageDict())]),
                                     width=0.15, height=0.3, depth=0.1,
                                     top_places=SpecifiedTopPlaceDict({'Test niche': i})))
-        return Niche("Test niche", niche_commissions_dict, 0.1, products)
+        return Niche(niche_name, niche_commissions_dict, 0.1, products)
 
     @staticmethod
     def leftover_func(x) -> int:

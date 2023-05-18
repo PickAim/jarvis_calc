@@ -10,7 +10,7 @@ from tests.base_test import BaseCalcTest
 class ProductAnalyzeTest(BaseCalcTest):
     def test_downturn_calculations(self):
         product_history = self.create_test_product_history()
-        product = Product("product", 1000, 1, 3.4, "brand", "seller", product_history)
+        product = Product("product", 1000, 1, 3.4, "brand", "seller", "g", "g", product_history)
         downturn = DownturnCalculator().calculate(product, datetime.utcnow())
         self.assertEqual({
             123: {
