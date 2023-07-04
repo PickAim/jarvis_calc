@@ -36,8 +36,8 @@ class DBController:
         self.__user_info_changer.update_session_tokens_by_imprint(access_token, update_token, imprint_token, user_id)
 
     def save_unit_economy_request(self, request: UnitEconomyRequest, result: UnitEconomyResult,
-                                  request_info: RequestInfo, user_id: int, marketplace_id: int) -> int:
-        return self.__jorm_changer.save_unit_economy_request(request, result, request_info, user_id, marketplace_id)
+                                  request_info: RequestInfo, user_id: int) -> int:
+        return self.__jorm_changer.save_unit_economy_request(request, result, request_info, user_id)
 
     def save_frequency_request(self, request: FrequencyRequest, result: FrequencyResult,
                                request_info: RequestInfo, user_id: int) -> int:
