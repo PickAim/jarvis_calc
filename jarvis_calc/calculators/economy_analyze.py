@@ -40,8 +40,7 @@ class UnitEconomyCalculator:
             investments = unit_cost * transit_count
             marketplace_expenses: int = int(revenue * niche_commission + logistic_expanses
                                             + warehouse.calculate_storage_price(volume) * transit_count)
-            result_transit_profit = revenue - investments - marketplace_expenses - int(
-                revenue * user.get_profit_tax())
+            result_transit_profit = revenue - investments - marketplace_expenses - int(revenue * user.profit_tax)
 
         result_product_margin: int = (mean_concurrent_cost - result_commission
                                       - result_logistic_price - result_storage_price - unit_cost)
