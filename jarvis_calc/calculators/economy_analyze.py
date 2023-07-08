@@ -1,18 +1,46 @@
+from dataclasses import dataclass
+
 from jorm.market.infrastructure import Niche, Warehouse
 from jorm.market.person import User
 from jorm.support.constants import DAYS_IN_MONTH
+from jarvis_calc.calculators.calculator_base import CalculatorBase
 
 
-class UnitEconomyCalculator:
+@dataclass
+class UnitEconomyCalculateData:
+    buy_price: int
+    pack_price: int
+    transit_price: int = 0.0
+    transit_count: int = 0.0
+    market_place_transit_price: int = 0.0
+
+
+@dataclass
+class UnitEconomyCalculateResult:
+    product_cost: int  # Закупочная себестоимость
+    pack_cost: int  # Упаковка
+    marketplace_commission: int  # Комиссия маркетплейса
+    logistic_price: int  # Логистика
+    storage_price: int  # Хранение
+    margin: int  # Маржа в копейках
+    recommended_price: int
+    transit_profit: int  # Чистая прибыль с транзита
+    roi: float  # ROI
+    transit_margin: float  # Маржа с транзита (%)
+
+
+class UnitEconomyCalculator(CalculatorBase):
     @staticmethod
-    def calculate(buy_price: int,
-                  pack_price: int,
+    def calculate(data: UnitEconomyCalculateData,
                   niche: Niche,
                   warehouse: Warehouse,
-                  user: User,
-                  transit_price: int = 0.0,
-                  transit_count: int = 0.0,
-                  market_place_transit_price: int = 0.0) -> dict[str, int | float]:
+                  user: User) -> UnitEconomyCalculateResult:
+        buy_price: int = data.buy_price
+        pack_price: int = data.pack_price
+        transit_price: int = data.transit_price
+        transit_count: int = data.transit_count
+        market_place_transit_price: int = data.market_place_transit_price
+
         niche_commission: float = warehouse.get_niche_commission(niche)
         unit_cost: int = (buy_price + pack_price)
         mean_concurrent_cost: int = niche.get_mean_concurrent_cost(unit_cost,
@@ -45,16 +73,16 @@ class UnitEconomyCalculator:
         result_product_margin: int = (mean_concurrent_cost - result_commission
                                       - result_logistic_price - result_storage_price - unit_cost)
 
-        return {
-            "product_cost": buy_price,  # Закупочная себестоимость
-            "pack_cost": pack_price,  # Упаковка
-            "marketplace_commission": result_commission,  # Комиссия маркетплейса
-            "logistic_price": result_logistic_price,  # Логистика
-            "storage_price": result_storage_price,  # Хранение
-            "margin": result_product_margin,  # Маржа в копейках
-            "recommended_price": (buy_price + pack_price + result_commission + result_logistic_price +
-                                  result_storage_price + result_product_margin),
-            "transit_profit": result_transit_profit,  # Чистая прибыль с транзита
-            "roi": result_transit_profit / investments,  # ROI
-            "transit_margin": result_transit_profit / revenue,  # Маржа с транзита (%)
-        }
+        return UnitEconomyCalculateResult(
+            product_cost=buy_price,  # Закупочная себестоимость
+            pack_cost=pack_price,  # Упаковка
+            marketplace_commission=result_commission,  # Комиссия маркетплейса
+            logistic_price=result_logistic_price,  # Логистика
+            storage_price=result_storage_price,  # Хранение
+            margin=result_product_margin,  # Маржа в копейках
+            recommended_price=(buy_price + pack_price + result_commission + result_logistic_price +
+                               result_storage_price + result_product_margin),
+            transit_profit=result_transit_profit,  # Чистая прибыль с транзита
+            roi=result_transit_profit / investments,  # ROI
+            transit_margin=result_transit_profit / revenue,  # Маржа с транзита (%)
+        )
