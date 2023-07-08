@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class CalculatorBase:
+class Calculator:
     @staticmethod
     @abstractmethod
     def calculate(*args):

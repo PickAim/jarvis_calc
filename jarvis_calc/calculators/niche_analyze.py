@@ -7,7 +7,7 @@ from jorm.market.items import Product
 from jorm.support.constants import DAYS_IN_MONTH
 from numpy import ndarray
 
-from jarvis_calc.calculators.calculator_base import CalculatorBase
+from jarvis_calc.calculators.calculator_base import Calculator
 from jarvis_calc.utils.calculation_utils import calculate_trade_frequencies, calculate_trade_profits
 
 
@@ -26,7 +26,7 @@ class NicheCharacteristicsCalculateResult:
     maximum_profit_idx: int
 
 
-class NicheHistCalculator(CalculatorBase):
+class NicheHistCalculator(Calculator):
     @staticmethod
     def calculate(niche: Niche) -> tuple[list[int], list[int]]:
         cost_data: ndarray[int] = niche.cost_data.copy()
@@ -34,7 +34,7 @@ class NicheHistCalculator(CalculatorBase):
         return NicheHistWithNCalculator.calculate(cost_data, n_samples)
 
 
-class NicheHistWithNCalculator(CalculatorBase):
+class NicheHistWithNCalculator(Calculator):
     @staticmethod
     def calculate(cost_data: ndarray[int], n_samples: int) -> tuple[list[int], list[int]]:
         if len(cost_data) <= 0:
@@ -87,7 +87,7 @@ class NicheHistWithNCalculator(CalculatorBase):
         return int(result / len(clear_frequency))
 
 
-class NicheCharacteristicsCalculator(CalculatorBase):
+class NicheCharacteristicsCalculator(Calculator):
     @staticmethod
     def calculate(niche: Niche) -> NicheCharacteristicsCalculateResult:
         result_card_count: int = len(niche.products)
@@ -126,7 +126,7 @@ class NicheCharacteristicsCalculator(CalculatorBase):
         )
 
 
-class GreenTradeZoneCalculator(CalculatorBase):
+class GreenTradeZoneCalculator(Calculator):
     @staticmethod
     def calculate(niche: Niche):
         freq_keys, frequencies = NicheHistCalculator.calculate(niche)

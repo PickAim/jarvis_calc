@@ -4,10 +4,10 @@ from datetime import datetime
 from jorm.market.items import Product, ProductHistoryUnit
 from jorm.support.constants import DAYS_IN_MONTH
 
-from jarvis_calc.calculators.calculator_base import CalculatorBase
+from jarvis_calc.calculators.calculator_base import Calculator
 
 
-class DownturnCalculator(CalculatorBase):
+class DownturnCalculator(Calculator):
     @staticmethod
     def calculate(product: Product, from_date) -> dict[int, dict[str, int]]:
         warehouse_id_to_downturn_days: dict[int, dict[str, int]] = {}
@@ -28,7 +28,7 @@ class DownturnCalculator(CalculatorBase):
         return warehouse_id_to_downturn_days
 
 
-class TurnoverCalculator(CalculatorBase):
+class TurnoverCalculator(Calculator):
     @staticmethod
     def calculate(product: Product, from_date) -> dict[int, dict[str, float]]:
         warehouse_id_to_turnover: dict[int, dict[str, float]] = {}

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from jorm.market.infrastructure import Niche, Warehouse
 from jorm.market.person import User
 from jorm.support.constants import DAYS_IN_MONTH
-from jarvis_calc.calculators.calculator_base import CalculatorBase
+from jarvis_calc.calculators.calculator_base import Calculator
 
 
 @dataclass
@@ -29,7 +29,7 @@ class UnitEconomyCalculateResult:
     transit_margin: float  # Маржа с транзита (%)
 
 
-class UnitEconomyCalculator(CalculatorBase):
+class UnitEconomyCalculator(Calculator):
     @staticmethod
     def calculate(data: UnitEconomyCalculateData,
                   niche: Niche,
