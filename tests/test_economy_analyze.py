@@ -3,7 +3,8 @@ import unittest
 from jorm.market.infrastructure import Niche, HandlerType, Warehouse, Address
 from jorm.market.person import UserPrivilege, User
 
-from jarvis_calc.calculators.economy_analyze import UnitEconomyCalculator
+from jarvis_calc.calculators.economy_analyze import UnitEconomyCalculator, UnitEconomyCalculateResult, \
+    UnitEconomyCalculateData
 from tests.base_test import BaseCalcTest
 
 
@@ -21,9 +22,10 @@ class EconomyAnalyzeTest(BaseCalcTest):
                               logistic_from_customer_commission=33_00, basic_storage_commission=15,
                               additional_storage_commission=0, mono_palette_storage_commission=10)
         client = User(name="client", privilege=UserPrivilege.BASIC, profit_tax=0.06)
-        result = calculator.calculate(buy, pack, niche, warehouse, client,
-                                      transit_price, transit_count, marketplace_transit_price)
-        self.assertEqual(69_57, result["margin"])
+        result = calculator.calculate(
+            UnitEconomyCalculateData(buy, pack, transit_price, transit_count, marketplace_transit_price),
+            niche, warehouse, client)
+        self.assertEqual(69_57, result.margin)
 
 
 if __name__ == '__main__':

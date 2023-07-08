@@ -11,7 +11,7 @@ class ProductAnalyzeTest(BaseCalcTest):
     def test_downturn_calculations(self):
         product_history = self.create_test_product_history()
         product = Product("product", 1000, 1, 3.4, "brand", "seller", "g", "g", product_history)
-        downturn = DownturnCalculator().calculate(product, datetime.utcnow())
+        downturn = DownturnCalculator.calculate(product, datetime.utcnow())
         self.assertEqual({
             123: {
                 's': 0,
@@ -28,7 +28,7 @@ class ProductAnalyzeTest(BaseCalcTest):
     def test_turnover_calculations(self):
         product_history = self.create_test_product_history()
         product = Product("product", 1000, 1, 3.4, "brand", "seller", "g", "g", product_history)
-        turnover = TurnoverCalculator().calculate(product, datetime.utcnow())
+        turnover = TurnoverCalculator.calculate(product, datetime.utcnow())
         self.assertEqual({
             123: {
                 's': 15.0,
