@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jarvis_calc"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
     "numpy",
     "matplotlib",
-    "jorm @ git+https://github.com/PickAim/jorm.git@v.0.1.5",
+    "jorm @ git+https://github.com/PickAim/jorm.git@v.0.1.6",
 ]
