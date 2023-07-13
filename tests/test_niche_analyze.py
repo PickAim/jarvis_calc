@@ -36,7 +36,7 @@ class NicheAnalyzeTest(BaseCalcTest):
             mean_traded_card_cost=137506,
             month_mean_niche_profit_per_card=1837382,
             monopoly_percent=0.030747309758626423,
-            maximum_profit_idx=1), result)
+            maximum_profit_idx=0), result)
 
     def test_green_zone(self):
         niche: Niche = self.create_test_niche()

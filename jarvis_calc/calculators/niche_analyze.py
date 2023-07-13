@@ -1,9 +1,7 @@
-import datetime
 from dataclasses import dataclass
 
 import numpy as np
 from jorm.market.infrastructure import Niche
-from jorm.market.items import Product
 from jorm.support.constants import DAYS_IN_MONTH
 from numpy import ndarray
 
@@ -99,7 +97,7 @@ class NicheCharacteristicsCalculator(Calculator):
         top_100_profit = 0
         freq_keys, _ = NicheHistWithNCalculator.calculate(niche.cost_data, 3)
         trade_profits = calculate_trade_profits(niche.products, freq_keys)
-        max_idx = int(np.argmax(trade_profits))
+        max_idx = 0 if len(trade_profits) == 0 else int(np.argmax(trade_profits))
         for product in niche.products:
             product_trade_count = product.history.get_last_month_trade_count()
             rating_count += product.rating
@@ -115,13 +113,13 @@ class NicheCharacteristicsCalculator(Calculator):
             card_count=result_card_count,
             niche_profit=int(result_overall_profit),
             card_trade_count=result_products_trade_count,
-            mean_card_rating=rating_count / result_card_count,
+            mean_card_rating=0 if result_card_count == 0 else rating_count / result_card_count,
             card_with_trades_count=result_products_with_trades_count,
             daily_mean_niche_profit=int(result_overall_profit / DAYS_IN_MONTH),
             daily_mean_trade_count=int(result_products_trade_count / DAYS_IN_MONTH),
-            mean_traded_card_cost=int(result_overall_profit / result_products_trade_count),
-            month_mean_niche_profit_per_card=int(result_overall_profit / result_card_count),
-            monopoly_percent=top_100_profit / result_overall_profit,
+            mean_traded_card_cost=0 if result_products_trade_count == 0 else int(result_overall_profit / result_products_trade_count),
+            month_mean_niche_profit_per_card=0 if result_card_count == 0 else int(result_overall_profit / result_card_count),
+            monopoly_percent=0 if result_overall_profit == 0 else top_100_profit / result_overall_profit,
             maximum_profit_idx=max_idx
         )
 
