@@ -1,6 +1,6 @@
 from jorm.jarvis.db_access import UserInfoCollector, JORMCollector
 from jorm.jarvis.db_update import UserInfoChanger, JORMChanger
-from jorm.market.infrastructure import Warehouse, Niche
+from jorm.market.infrastructure import Warehouse, Niche, Category, Marketplace
 from jorm.market.items import Product
 from jorm.market.person import Account, User
 from jorm.market.service import UnitEconomyRequest, UnitEconomyResult, FrequencyResult, FrequencyRequest, RequestInfo
@@ -8,8 +8,6 @@ from jorm.server.token.types import TokenType
 
 
 class DBController:
-    instance = None
-
     def __init__(self, user_info_collector: UserInfoCollector, jorm_collector: JORMCollector,
                  user_info_changer: UserInfoChanger, jorm_changer: JORMChanger):
         self.__user_info_collector: UserInfoCollector = user_info_collector
@@ -52,6 +50,12 @@ class DBController:
     def load_new_niche(self, niche_name: str) -> Niche:
         return self.__jorm_changer.load_new_niche(niche_name)
 
+    def load_user_products(self, user_id: int, marketplace_id: int) -> list[Product]:
+        return self.__jorm_changer.load_user_products(user_id, marketplace_id)
+
+    def load_user_warehouse(self, user_id: int, marketplace_id: int) -> list[Product]:
+        return self.__jorm_changer.load_user_warehouse(user_id, marketplace_id)
+
     def get_user_by_account(self, account: Account) -> User:
         return self.__user_info_collector.get_user_by_account(account)
 
@@ -67,11 +71,17 @@ class DBController:
     def get_niche(self, niche_name: str, category_name: str, marketplace_id: int) -> Niche:
         return self.__jorm_collector.get_niche(niche_name, category_name, marketplace_id)
 
+    def get_all_marketplaces(self) -> dict[int, Marketplace]:
+        return self.__jorm_collector.get_all_marketplaces()
+
+    def get_all_categories(self, marketplace_id: int) -> dict[int, Category]:
+        return self.__jorm_collector.get_all_categories(marketplace_id)
+
     def get_warehouse(self, warehouse_name: str) -> Warehouse:
         return self.__jorm_collector.get_warehouse(warehouse_name)
 
-    def get_all_warehouses(self) -> list[Warehouse]:
-        return self.__jorm_collector.get_all_warehouses()
+    def get_all_warehouses(self, marketplace_id: int) -> list[Warehouse]:
+        return self.__jorm_collector.get_all_warehouses(marketplace_id)
 
     def get_all_unit_economy_results(self, user_id: int) \
             -> list[tuple[UnitEconomyRequest, UnitEconomyResult, RequestInfo]]:
@@ -83,6 +93,9 @@ class DBController:
 
     def get_products_by_user(self, user_id: int) -> list[Product]:
         return self.__jorm_collector.get_products_by_user(user_id)
+
+    def get_users_warehouses(self, user_id: int, marketplace_id: int) -> list[Warehouse]:
+        return self.__jorm_collector.get_users_warehouses(user_id, marketplace_id)
 
     def delete_tokens_for_user(self, user_id: int, imprint_token: str):
         self.__user_info_changer.delete_tokens_for_user(user_id, imprint_token)
