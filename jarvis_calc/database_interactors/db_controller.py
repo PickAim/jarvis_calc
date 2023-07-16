@@ -77,8 +77,8 @@ class DBController:
     def get_all_categories(self, marketplace_id: int) -> dict[int, Category]:
         return self.__jorm_collector.get_all_categories(marketplace_id)
 
-    def get_warehouse(self, warehouse_name: str) -> Warehouse:
-        return self.__jorm_collector.get_warehouse(warehouse_name)
+    def get_warehouse(self, warehouse_name: str, marketplace_id: int) -> Warehouse:
+        return self.__jorm_collector.get_warehouse(warehouse_name, marketplace_id)
 
     def get_all_warehouses(self, marketplace_id: int) -> list[Warehouse]:
         return self.__jorm_collector.get_all_warehouses(marketplace_id)
