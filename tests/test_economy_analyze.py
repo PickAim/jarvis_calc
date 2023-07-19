@@ -3,8 +3,7 @@ import unittest
 from jorm.market.infrastructure import Niche, HandlerType, Warehouse, Address
 from jorm.market.person import UserPrivilege, User
 
-from jarvis_calc.calculators.economy_analyze import UnitEconomyCalculator, UnitEconomyCalculateResult, \
-    UnitEconomyCalculateData
+from jarvis_calc.calculators.economy_analyze import UnitEconomyCalculator, UnitEconomyCalculateData
 from tests.base_test import BaseCalcTest
 
 

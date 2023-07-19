@@ -71,8 +71,8 @@ class DBController:
     def get_niche(self, niche_name: str, category_id: int, marketplace_id: int) -> Niche:
         return self.__jorm_collector.get_niche(niche_name, category_id, marketplace_id)
 
-    def get_all_niches(self, category_id: int, marketplace_id: int) -> dict[int, Niche]:
-        return self.__jorm_collector.get_all_niches(category_id, marketplace_id)
+    def get_all_niches(self, category_id: int) -> dict[int, Niche]:
+        return self.__jorm_collector.get_all_niches(category_id)
 
     def get_all_marketplaces(self) -> dict[int, Marketplace]:
         return self.__jorm_collector.get_all_marketplaces()
