@@ -53,7 +53,7 @@ class DBController:
     def load_user_products(self, user_id: int, marketplace_id: int) -> list[Product]:
         return self.__jorm_changer.load_user_products(user_id, marketplace_id)
 
-    def load_user_warehouse(self, user_id: int, marketplace_id: int) -> list[Product]:
+    def load_user_warehouse(self, user_id: int, marketplace_id: int) -> list[Warehouse]:
         return self.__jorm_changer.load_user_warehouse(user_id, marketplace_id)
 
     def get_user_by_account(self, account: Account) -> User:
@@ -83,7 +83,7 @@ class DBController:
     def get_warehouse(self, warehouse_name: str, marketplace_id: int) -> Warehouse:
         return self.__jorm_collector.get_warehouse(warehouse_name, marketplace_id)
 
-    def get_all_warehouses(self, marketplace_id: int) -> list[Warehouse]:
+    def get_all_warehouses(self, marketplace_id: int) -> dict[int, Warehouse]:
         return self.__jorm_collector.get_all_warehouses(marketplace_id)
 
     def get_all_unit_economy_results(self, user_id: int) \
@@ -94,10 +94,10 @@ class DBController:
             -> list[tuple[FrequencyRequest, FrequencyResult, RequestInfo]]:
         return self.__jorm_collector.get_all_frequency_results(user_id)
 
-    def get_products_by_user(self, user_id: int) -> list[Product]:
+    def get_products_by_user(self, user_id: int) -> dict[int, Product]:
         return self.__jorm_collector.get_products_by_user(user_id)
 
-    def get_users_warehouses(self, user_id: int, marketplace_id: int) -> list[Warehouse]:
+    def get_users_warehouses(self, user_id: int, marketplace_id: int) -> dict[int, Warehouse]:
         return self.__jorm_collector.get_users_warehouses(user_id, marketplace_id)
 
     def delete_tokens_for_user(self, user_id: int, imprint_token: str):
