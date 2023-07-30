@@ -25,6 +25,21 @@ class DBController:
             raise Exception(str(type(DBController)) + ": unexpected token type")
         return rnd_part_from_db == rnd_part_to_check
 
+    def add_marketplace_api_key(self, api_key: str, user_id: int, marketplace_id: int) -> None:
+        self.__user_info_changer.add_marketplace_api_key(api_key, user_id, marketplace_id)
+
+    def update_all_categories(self, marketplace_id: int) -> None:
+        self.__jorm_changer.update_all_categories(marketplace_id)
+
+    def update_all_niches(self, category_id: int) -> None:
+        self.__jorm_changer.update_all_niches(category_id)
+
+    def update_niche(self, niche_id: int) -> Niche:
+        return self.__jorm_changer.update_niche(niche_id)
+
+    def update_product(self, product_id: int) -> Product:
+        return self.__jorm_changer.update_product(product_id)
+
     def update_session_tokens(self, user_id: int, old_update_token: str,
                               new_access_token: str, new_update_token: str) -> None:
         self.__user_info_changer.update_session_tokens(user_id, old_update_token, new_access_token, new_update_token)
@@ -47,7 +62,7 @@ class DBController:
     def save_user_and_account(self, user: User, account: Account) -> None:
         self.__user_info_changer.save_user_and_account(user, account)
 
-    def load_new_niche(self, niche_name: str) -> Niche:
+    def load_new_niche(self, niche_name: str) -> Niche | None:
         return self.__jorm_changer.load_new_niche(niche_name)
 
     def load_user_products(self, user_id: int, marketplace_id: int) -> list[Product]:
