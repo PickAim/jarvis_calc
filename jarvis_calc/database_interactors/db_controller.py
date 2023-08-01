@@ -85,9 +85,9 @@ class DBController:
 
     def get_niche(self, niche_name: str, category_id: int, marketplace_id: int) -> Niche:
         return self.__jorm_collector.get_niche(niche_name, category_id, marketplace_id)
-
-    def get_all_niches(self, category_id: int) -> dict[int, Niche]:
-        return self.__jorm_collector.get_all_niches(category_id)
+    
+    def get_warehouse(self, warehouse_name: str, marketplace_id: int) -> Warehouse:
+        return self.__jorm_collector.get_warehouse(warehouse_name, marketplace_id)
 
     def get_all_marketplaces(self) -> dict[int, Marketplace]:
         return self.__jorm_collector.get_all_marketplaces()
@@ -95,11 +95,23 @@ class DBController:
     def get_all_categories(self, marketplace_id: int) -> dict[int, Category]:
         return self.__jorm_collector.get_all_categories(marketplace_id)
 
-    def get_warehouse(self, warehouse_name: str, marketplace_id: int) -> Warehouse:
-        return self.__jorm_collector.get_warehouse(warehouse_name, marketplace_id)
+    def get_all_niches(self, category_id: int) -> dict[int, Niche]:
+        return self.__jorm_collector.get_all_niches(category_id)
 
     def get_all_warehouses(self, marketplace_id: int) -> dict[int, Warehouse]:
         return self.__jorm_collector.get_all_warehouses(marketplace_id)
+
+    def get_all_marketplaces_atomic(self) -> dict[int, Marketplace]:
+        return self.__jorm_collector.get_all_marketplaces_atomic()
+
+    def get_all_categories_atomic(self, marketplace_id: int) -> dict[int, Category]:
+        return self.__jorm_collector.get_all_categories_atomic(marketplace_id)
+
+    def get_all_niches_atomic(self, category_id: int) -> dict[int, Niche]:
+        return self.__jorm_collector.get_all_niches_atomic(category_id)
+
+    def get_all_warehouses_atomic(self, marketplace_id: int) -> dict[int, Warehouse]:
+        return self.__jorm_collector.get_all_warehouses_atomic(marketplace_id)
 
     def get_all_unit_economy_results(self, user_id: int) \
             -> list[tuple[UnitEconomyRequest, UnitEconomyResult, RequestInfo]]:
