@@ -75,7 +75,7 @@ class NicheHistWithNCalculator(Calculator):
     @staticmethod
     def __frequency_calc(costs: ndarray[int], n_samples: int) -> tuple[list[int], list[int]]:
         res = np.histogram(costs, n_samples)
-        return list(map(int, res[1][1:])), list(res[0])
+        return list(map(int, res[1][:-1])), list(res[0])
 
     @staticmethod
     def __get_cleared_mean(lst: list[int]) -> int:
@@ -96,7 +96,7 @@ class NicheCharacteristicsCalculator(Calculator):
         rating_count = 0
 
         top_100_profit = 0
-        freq_keys, _ = NicheHistWithNCalculator.calculate(niche.cost_data, 3)
+        freq_keys, _ = NicheHistWithNCalculator.calculate(niche.cost_data, 10)
         trade_profits = NicheCharacteristicsCalculator.__calculate_trade_profits(niche.products, freq_keys)
         max_idx = 0 if len(trade_profits) == 0 else int(np.argmax(trade_profits))
         for product in niche.products:
@@ -167,7 +167,7 @@ class GreenTradeZoneCalculator(Calculator):
     def calculate(niche: Niche,
                   from_date: datetime.datetime = datetime.datetime.utcnow()) -> GreenTradeZoneCalculateResult:
         res = np.histogram(niche.cost_data, 10)
-        freq_keys, frequencies = list(map(int, res[1][1:])), list(res[0])
+        freq_keys, frequencies = list(map(int, res[1][:-1])), list(res[0])
         sorted_products = sorted(niche.products, key=lambda prod: prod.cost, reverse=True)
 
         segment_profits: list[int] = [0 for _ in range(len(freq_keys))]
