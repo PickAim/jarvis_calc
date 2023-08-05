@@ -31,14 +31,14 @@ class DBController:
     def update_all_categories(self, marketplace_id: int) -> None:
         self.__jorm_changer.update_all_categories(marketplace_id)
 
-    def update_all_niches(self, category_id: int) -> None:
-        self.__jorm_changer.update_all_niches(category_id)
+    def update_all_niches(self, category_id: int, marketplace_id: int) -> None:
+        self.__jorm_changer.update_all_niches(category_id, marketplace_id)
 
-    def update_niche(self, niche_id: int) -> Niche:
-        return self.__jorm_changer.update_niche(niche_id)
+    def update_niche(self, niche_id: int, category_id: int, marketplace_id: int) -> Niche:
+        return self.__jorm_changer.update_niche(niche_id, category_id, marketplace_id)
 
-    def update_product(self, product_id: int) -> Product:
-        return self.__jorm_changer.update_product(product_id)
+    def update_product(self, product_id: int, marketplace_id: int) -> Product:
+        return self.__jorm_changer.update_product(product_id, marketplace_id)
 
     def update_session_tokens(self, user_id: int, old_update_token: str,
                               new_access_token: str, new_update_token: str) -> None:
@@ -62,8 +62,8 @@ class DBController:
     def save_user_and_account(self, user: User, account: Account) -> None:
         self.__user_info_changer.save_user_and_account(user, account)
 
-    def load_new_niche(self, niche_name: str) -> Niche | None:
-        return self.__jorm_changer.load_new_niche(niche_name)
+    def load_new_niche(self, niche_name: str, marketplace_id: int) -> Niche | None:
+        return self.__jorm_changer.load_new_niche(niche_name, marketplace_id)
 
     def load_user_products(self, user_id: int, marketplace_id: int) -> list[Product]:
         return self.__jorm_changer.load_user_products(user_id, marketplace_id)
@@ -126,6 +126,12 @@ class DBController:
 
     def get_users_warehouses(self, user_id: int, marketplace_id: int) -> dict[int, Warehouse]:
         return self.__jorm_collector.get_users_warehouses(user_id, marketplace_id)
+
+    def delete_marketplace_api_key(self, user_id: int, marketplace_id: int) -> None:
+        self.__user_info_changer.delete_marketplace_api_key(user_id, marketplace_id)
+
+    def delete_account(self, user_id: int) -> None:
+        self.__user_info_changer.delete_account(user_id)
 
     def delete_tokens_for_user(self, user_id: int, imprint_token: str):
         self.__user_info_changer.delete_tokens_for_user(user_id, imprint_token)
