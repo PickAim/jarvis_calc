@@ -124,6 +124,9 @@ class DBController:
     def get_products_by_user(self, user_id: int, marketplace_id: int) -> dict[int, Product]:
         return self.__jorm_collector.get_products_by_user(user_id, marketplace_id)
 
+    def get_products_by_user_atomic(self, user_id: int, marketplace_id: int) -> dict[int, Product]:
+        return self.__jorm_collector.get_products_by_user_atomic(user_id, marketplace_id)
+
     def get_users_warehouses(self, user_id: int, marketplace_id: int) -> dict[int, Warehouse]:
         return self.__jorm_collector.get_users_warehouses(user_id, marketplace_id)
 
