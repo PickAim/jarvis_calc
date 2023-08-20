@@ -29,7 +29,7 @@ class NicheHistCalculator(Calculator):
     @staticmethod
     def calculate(niche: Niche) -> tuple[list[int], list[int]]:
         cost_data: ndarray[int] = niche.cost_data.copy()
-        n_samples: int = int(len(cost_data) * 0.1)
+        n_samples: int = 10
         return NicheHistWithNCalculator.calculate(cost_data, n_samples)
 
 
@@ -38,39 +38,41 @@ class NicheHistWithNCalculator(Calculator):
     def calculate(cost_data: ndarray[int], n_samples: int) -> tuple[list[int], list[int]]:
         if len(cost_data) <= 0:
             return [], []
-        base_keys, base_frequencies = NicheHistWithNCalculator.__frequency_calc(cost_data, n_samples)
-        keys = base_keys.copy()
-        frequencies = base_frequencies.copy()
-        math_ozh: int = NicheHistWithNCalculator.__get_cleared_mean(frequencies)
-        interesting_part_ind = len(keys) // 3
-        if len(frequencies) < 2:
-            return keys, frequencies
-        while frequencies[interesting_part_ind] > math_ozh // 2 and interesting_part_ind < len(frequencies):
-            interesting_part_ind += 1
-        while True:
-            if 0 < interesting_part_ind < len(frequencies):
-                right_key = keys[interesting_part_ind]
-                right_frequency: int = 0
-                for i in range(interesting_part_ind, len(frequencies)):
-                    right_frequency += frequencies[i]
-                left_costs: list[float] = []
-                for cost in cost_data:
-                    if cost < keys[interesting_part_ind - 1]:
-                        left_costs.append(cost)
-                    else:
-                        break
-                keys, frequencies = NicheHistWithNCalculator.__frequency_calc(np.array(left_costs), n_samples - 1)
-                keys.append(right_key)
-                frequencies.append(right_frequency)
-                if right_frequency > NicheHistWithNCalculator.__get_cleared_mean(frequencies):
-                    interesting_part_ind += 1
-                    frequencies = base_frequencies
-                    keys = base_keys
-                else:
-                    break
-            else:
-                break
-        return list(keys), list(frequencies)
+        return NicheHistWithNCalculator.__frequency_calc(cost_data, n_samples)
+        # possible needed to correct frequencies, disabled for now
+        # base_keys, base_frequencies = NicheHistWithNCalculator.__frequency_calc(cost_data, n_samples)
+        # keys = base_keys.copy()
+        # frequencies = base_frequencies.copy()
+        # math_ozh: int = NicheHistWithNCalculator.__get_cleared_mean(frequencies)
+        # interesting_part_ind = len(keys) // 3
+        # if len(frequencies) < 2:
+        #     return keys, frequencies
+        # while frequencies[interesting_part_ind] > math_ozh // 2 and interesting_part_ind < len(frequencies):
+        #     interesting_part_ind += 1
+        # while True:
+        #     if 0 < interesting_part_ind < len(frequencies):
+        #         right_key = keys[interesting_part_ind]
+        #         right_frequency: int = 0
+        #         for i in range(interesting_part_ind, len(frequencies)):
+        #             right_frequency += frequencies[i]
+        #         left_costs: list[float] = []
+        #         for cost in cost_data:
+        #             if cost < keys[interesting_part_ind - 1]:
+        #                 left_costs.append(cost)
+        #             else:
+        #                 break
+        #         keys, frequencies = NicheHistWithNCalculator.__frequency_calc(np.array(left_costs), n_samples - 1)
+        #         keys.append(right_key)
+        #         frequencies.append(right_frequency)
+        #         if right_frequency > NicheHistWithNCalculator.__get_cleared_mean(frequencies):
+        #             interesting_part_ind += 1
+        #             frequencies = base_frequencies
+        #             keys = base_keys
+        #         else:
+        #             break
+        #     else:
+        #         break
+        # return list(keys), list(frequencies)
 
     @staticmethod
     def __frequency_calc(costs: ndarray[int], n_samples: int) -> tuple[list[int], list[int]]:

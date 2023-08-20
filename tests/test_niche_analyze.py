@@ -6,14 +6,13 @@ from jorm.market.infrastructure import Niche
 from jarvis_calc.calculators.niche_analyze import NicheCharacteristicsCalculator, NicheHistCalculator, \
     NicheCharacteristicsCalculateResult, GreenTradeZoneCalculator, GreenTradeZoneCalculateResult
 from tests.base_test import BaseCalcTest
-from tests.data_for_tests import cost_data
 
 
 class NicheAnalyzeTest(BaseCalcTest):
     def test_only_freq_calc_with_jorm(self):
         niche: Niche = self.create_test_niche()
         x, y = NicheHistCalculator.calculate(niche)
-        self.assertEqual(int(len(cost_data) * 0.1), len(x))
+        self.assertEqual(10, len(x))
 
     def test_mean_concurrent_cost_calc_with_niche(self):
         niche: Niche = self.create_test_niche()
@@ -37,7 +36,7 @@ class NicheAnalyzeTest(BaseCalcTest):
             mean_traded_card_cost=137506,
             month_mean_niche_profit_per_card=1837382,
             monopoly_percent=0.030747309758626423,
-            maximum_profit_idx=2), result)
+            maximum_profit_idx=0), result)
 
     def test_green_zone(self):
         niche: Niche = self.create_test_niche()
