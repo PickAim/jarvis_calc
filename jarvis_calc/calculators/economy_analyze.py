@@ -2,8 +2,6 @@ import dataclasses
 from dataclasses import dataclass
 
 from jorm.market.infrastructure import Niche, Warehouse
-from jorm.market.person import User
-from jorm.support.constants import DAYS_IN_MONTH
 
 from jarvis_calc.calculators.calculator_base import Calculator
 
@@ -15,9 +13,9 @@ _MAX_STANDARD_VOLUME_IN_LITERS = 5
 _RETURN_PRICE = 50_00
 _OVERSIZE_LOGISTIC_PRICE = 1000_00
 _OVERSIZE_STORAGE_PRICE = 2_157
-_ADDITIONAL_WAREHOUSE_LOGISTIC_PRICE = 5_00
+_ADDITIONAL_WAREHOUSE_LOGISTIC_PRICE = 5
 _ADDITIONAL_WAREHOUSE_STORAGE_PRICE = 30
-_STANDARD_WAREHOUSE_ACTIONS_PRICE = 50_00
+_STANDARD_WAREHOUSE_ACTIONS_PRICE = 50
 
 
 @dataclass
@@ -37,6 +35,7 @@ class TransitEconomyCalculateData(SimpleEconomyCalculateData):
 
 @dataclass
 class SimpleEconomyResult:
+    result_cost: int
     logistic_price: int
     storage_price: int
     purchase_cost: int
@@ -58,14 +57,6 @@ class SimpleEconomyCalculator(Calculator):
         return user_result, recommended_result
 
     @staticmethod
-    def _calc_recommended_result(data: SimpleEconomyCalculateData,
-                                 niche: Niche, target_warehouse: Warehouse) -> SimpleEconomyResult:
-        recommended_cost = SimpleEconomyCalculator.__get_recommended_cost(data, niche, target_warehouse)
-        recommended_data = dataclasses.replace(data)
-        recommended_data.product_exist_cost = recommended_cost
-        return SimpleEconomyCalculator._calc_result(recommended_data, niche, target_warehouse)
-
-    @staticmethod
     def _calc_result(data: SimpleEconomyCalculateData,
                      niche: Niche, target_warehouse: Warehouse) -> SimpleEconomyResult:
         logistic_price: int = SimpleEconomyCalculator.__calc_logistic_price(data, target_warehouse)  # result
@@ -77,6 +68,7 @@ class SimpleEconomyCalculator(Calculator):
         relative_margin: float = SimpleEconomyCalculator.__calc_relative_margin(data, niche, target_warehouse)  # result
         roi: float = SimpleEconomyCalculator.__calc_roi(data, niche, target_warehouse)  # result
         return SimpleEconomyResult(
+            result_cost=data.product_exist_cost,
             logistic_price=logistic_price,
             storage_price=storage_price,
             purchase_cost=purchase_cost,
@@ -87,6 +79,14 @@ class SimpleEconomyCalculator(Calculator):
         )
 
     @staticmethod
+    def _calc_recommended_result(data: SimpleEconomyCalculateData,
+                                 niche: Niche, target_warehouse: Warehouse) -> SimpleEconomyResult:
+        recommended_cost = SimpleEconomyCalculator.__get_recommended_cost(data, niche, target_warehouse)
+        recommended_data = dataclasses.replace(data)
+        recommended_data.product_exist_cost = recommended_cost
+        return SimpleEconomyCalculator._calc_result(recommended_data, niche, target_warehouse)
+
+    @staticmethod
     def __get_recommended_cost(data: SimpleEconomyCalculateData,
                                niche: Niche, target_warehouse: Warehouse) -> int:
         logistic_price: int = SimpleEconomyCalculator.__calc_logistic_price(data, target_warehouse)
@@ -94,7 +94,7 @@ class SimpleEconomyCalculator(Calculator):
         mean_concurrent_cost: int = niche.get_mean_concurrent_cost(data.cost_price, logistic_price, storage_price)
         concurrent_data = dataclasses.replace(data)
         concurrent_data.product_exist_cost = mean_concurrent_cost
-        concurrent_economy_result = SimpleEconomyCalculator._calc_result(data, niche, target_warehouse)
+        concurrent_economy_result = SimpleEconomyCalculator._calc_result(concurrent_data, niche, target_warehouse)
         return int(
             mean_concurrent_cost
             + concurrent_economy_result.purchase_cost
@@ -128,7 +128,7 @@ class SimpleEconomyCalculator(Calculator):
         storage_price: int = SimpleEconomyCalculator.__calc_storage_price(data, target_warehouse)  # result
         return int(
             niche_commission * product_cost
-            + storage_price * DAYS_IN_MONTH
+            + storage_price
             + logistic_price
             + niche_return_percent * _RETURN_PRICE
         )
