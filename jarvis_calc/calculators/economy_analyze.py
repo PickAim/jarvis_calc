@@ -2,6 +2,7 @@ import dataclasses
 from dataclasses import dataclass
 
 from jorm.market.infrastructure import Niche, Warehouse
+from jorm.support.constants import DAYS_IN_MONTH
 
 from jarvis_calc.calculators.calculator_base import Calculator
 
@@ -13,9 +14,10 @@ _MAX_STANDARD_VOLUME_IN_LITERS = 5
 _RETURN_PRICE = 50_00
 _OVERSIZE_LOGISTIC_PRICE = 1000_00
 _OVERSIZE_STORAGE_PRICE = 2_157
-_ADDITIONAL_WAREHOUSE_LOGISTIC_PRICE = 5
+_ADDITIONAL_WAREHOUSE_LOGISTIC_PRICE = 5_00
+_STANDARD_WAREHOUSE_LOGISTIC_PRICE = 50_00
 _ADDITIONAL_WAREHOUSE_STORAGE_PRICE = 30
-_STANDARD_WAREHOUSE_ACTIONS_PRICE = 50
+_STANDARD_WAREHOUSE_STORAGE_PRICE = 30
 
 
 @dataclass
@@ -128,7 +130,7 @@ class SimpleEconomyCalculator(Calculator):
         storage_price: int = SimpleEconomyCalculator.__calc_storage_price(data, target_warehouse)  # result
         return int(
             niche_commission * product_cost
-            + storage_price
+            + storage_price * DAYS_IN_MONTH
             + logistic_price
             + niche_return_percent * _RETURN_PRICE
         )
@@ -149,10 +151,10 @@ class SimpleEconomyCalculator(Calculator):
             return _OVERSIZE_LOGISTIC_PRICE
         volume: float = SimpleEconomyCalculator.__calc_volume_in_liters(data)
         if volume <= _MAX_STANDARD_VOLUME_IN_LITERS:
-            return warehouse.main_coefficient * _STANDARD_WAREHOUSE_ACTIONS_PRICE
+            return int(warehouse.main_coefficient * _STANDARD_WAREHOUSE_LOGISTIC_PRICE)
         over_standard_volume = volume - _MAX_STANDARD_VOLUME_IN_LITERS
         return int(
-            warehouse.main_coefficient * (_STANDARD_WAREHOUSE_ACTIONS_PRICE +
+            warehouse.main_coefficient * (_STANDARD_WAREHOUSE_LOGISTIC_PRICE +
                                           over_standard_volume * _ADDITIONAL_WAREHOUSE_LOGISTIC_PRICE)
         )
 
@@ -163,10 +165,10 @@ class SimpleEconomyCalculator(Calculator):
             return _OVERSIZE_STORAGE_PRICE
         volume: float = SimpleEconomyCalculator.__calc_volume_in_liters(data)
         if volume <= _MAX_STANDARD_VOLUME_IN_LITERS:
-            return warehouse.main_coefficient * _STANDARD_WAREHOUSE_ACTIONS_PRICE
+            return int(warehouse.main_coefficient * _STANDARD_WAREHOUSE_STORAGE_PRICE)
         over_standard_volume = volume - _MAX_STANDARD_VOLUME_IN_LITERS
         return int(
-            warehouse.main_coefficient * (_STANDARD_WAREHOUSE_ACTIONS_PRICE +
+            warehouse.main_coefficient * (_STANDARD_WAREHOUSE_STORAGE_PRICE +
                                           over_standard_volume * _ADDITIONAL_WAREHOUSE_STORAGE_PRICE)
         )
 
