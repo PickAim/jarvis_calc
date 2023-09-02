@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from jorm.market.infrastructure import Niche, Warehouse
 from jorm.market.person import User
-from jorm.market.service import TransitEconomyResult, SimpleEconomyResult
+from jorm.support.calculation import TransitEconomyResult, SimpleEconomyResult
 from jorm.support.constants import DAYS_IN_MONTH
 
 from jarvis_calc.calculators.calculator_base import Calculator

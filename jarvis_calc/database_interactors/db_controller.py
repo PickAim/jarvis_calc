@@ -3,8 +3,9 @@ from jorm.jarvis.db_update import UserInfoChanger, JORMChanger
 from jorm.market.infrastructure import Warehouse, Niche, Category, Marketplace
 from jorm.market.items import Product
 from jorm.market.person import Account, User
-from jorm.market.service import UnitEconomyRequest, UnitEconomyResult, FrequencyResult, FrequencyRequest, RequestInfo
+from jorm.market.service import SimpleEconomyRequest, RequestInfo, TransitEconomyRequest
 from jorm.server.token.types import TokenType
+from jorm.support.calculation import SimpleEconomyResult, TransitEconomyResult
 
 
 class DBController:
@@ -39,13 +40,13 @@ class DBController:
                                          user_id: int) -> None:
         self.__user_info_changer.update_session_tokens_by_imprint(access_token, update_token, imprint_token, user_id)
 
-    def save_unit_economy_request(self, request: UnitEconomyRequest, result: UnitEconomyResult,
-                                  request_info: RequestInfo, user_id: int) -> int:
-        return self.__jorm_changer.save_unit_economy_request(request, result, request_info, user_id)
+    def save_simple_economy_request(self, request: SimpleEconomyRequest, result: SimpleEconomyResult,
+                                    request_info: RequestInfo, user_id: int) -> int:
+        return self.__jorm_changer.save_simple_economy_request(request, result, request_info, user_id)
 
-    def save_frequency_request(self, request: FrequencyRequest, result: FrequencyResult,
-                               request_info: RequestInfo, user_id: int) -> int:
-        return self.__jorm_changer.save_frequency_request(request, result, request_info, user_id)
+    def save_transit_economy_request(self, request: TransitEconomyRequest,
+                                     result: TransitEconomyResult, request_info: RequestInfo, user_id: int) -> int:
+        return self.__jorm_changer.save_transit_economy_request(request, result, request_info, user_id)
 
     def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user_id: int) -> None:
         self.__user_info_changer.save_all_tokens(access_token, update_token, imprint_token, user_id)
@@ -105,12 +106,14 @@ class DBController:
         return self.__jorm_collector.get_all_warehouses_atomic(marketplace_id)
 
     def get_all_unit_economy_results(self, user_id: int) \
-            -> list[tuple[UnitEconomyRequest, UnitEconomyResult, RequestInfo]]:
+            -> list[
+                tuple[
+                    SimpleEconomyRequest | TransitEconomyRequest,
+                    SimpleEconomyResult | TransitEconomyResult,
+                    RequestInfo
+                ]
+            ]:
         return self.__jorm_collector.get_all_unit_economy_results(user_id)
-
-    def get_all_frequency_results(self, user_id: int) \
-            -> list[tuple[FrequencyRequest, FrequencyResult, RequestInfo]]:
-        return self.__jorm_collector.get_all_frequency_results(user_id)
 
     def get_products_by_user(self, user_id: int, marketplace_id: int) -> dict[int, Product]:
         return self.__jorm_collector.get_products_by_user(user_id, marketplace_id)
@@ -132,6 +135,3 @@ class DBController:
 
     def delete_unit_economy_request_for_user(self, request_id: int, user_id: int) -> None:
         self.__jorm_changer.delete_unit_economy_request(request_id, user_id)
-
-    def delete_frequency_request_for_user(self, request_id: int, user_id: int) -> None:
-        self.__jorm_changer.delete_frequency_request(request_id, user_id)
