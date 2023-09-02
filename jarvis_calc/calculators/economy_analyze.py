@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from jorm.market.infrastructure import Niche, Warehouse
 from jorm.market.person import User
+from jorm.market.service import TransitEconomyResult, SimpleEconomyResult
 from jorm.support.constants import DAYS_IN_MONTH
 
 from jarvis_calc.calculators.calculator_base import Calculator
@@ -41,39 +42,27 @@ class TransitEconomyCalculateData(SimpleEconomyCalculateData):
     transit_count: int
 
 
-@dataclass
-class SimpleEconomyResult:
-    result_cost: int  # recommended or user defined cost
-    logistic_price: int
-    storage_price: int
-    purchase_cost: int  # cost price OR cost price + transit/count
-    marketplace_expanses: int
-    absolute_margin: int
-    relative_margin: float
-    roi: float
-
-
 class SimpleEconomyCalculator(Calculator):
 
-    @staticmethod
-    def calculate(data: SimpleEconomyCalculateData,
+    @classmethod
+    def calculate(cls, data: SimpleEconomyCalculateData,
                   niche: Niche, target_warehouse: Warehouse) -> tuple[SimpleEconomyResult, SimpleEconomyResult]:
-        user_result: SimpleEconomyResult = SimpleEconomyCalculator.__calc_result(data, niche, target_warehouse)
-        recommended_result: SimpleEconomyResult = SimpleEconomyCalculator.__calc_recommended_result(data, niche,
-                                                                                                    target_warehouse)
+        user_result: SimpleEconomyResult = cls.__calc_result(data, niche, target_warehouse)
+        recommended_result: SimpleEconomyResult = cls.__calc_recommended_result(data, niche,
+                                                                                target_warehouse)
         return user_result, recommended_result
 
-    @staticmethod
-    def __calc_result(data: SimpleEconomyCalculateData,
+    @classmethod
+    def __calc_result(cls, data: SimpleEconomyCalculateData,
                       niche: Niche, target_warehouse: Warehouse) -> SimpleEconomyResult:
-        logistic_price: int = SimpleEconomyCalculator.__calc_logistic_price(data, target_warehouse)
-        storage_price: int = SimpleEconomyCalculator.__calc_storage_price(data, target_warehouse)
-        purchase_cost: int = SimpleEconomyCalculator.__calc_purchase_cost(data)
-        marketplace_expanses: int = SimpleEconomyCalculator.__calc_marketplace_expanses(data, niche,
-                                                                                        target_warehouse)
-        absolute_margin: int = SimpleEconomyCalculator.__calc_absolute_margin(data, niche, target_warehouse)
-        relative_margin: float = SimpleEconomyCalculator.__calc_relative_margin(data, niche, target_warehouse)
-        roi: float = SimpleEconomyCalculator.__calc_roi(data, niche, target_warehouse)
+        logistic_price: int = cls.__calc_logistic_price(data, target_warehouse)
+        storage_price: int = cls.__calc_storage_price(data, target_warehouse)
+        purchase_cost: int = cls.__calc_purchase_cost(data)
+        marketplace_expanses: int = cls.__calc_marketplace_expanses(data, niche,
+                                                                    target_warehouse)
+        absolute_margin: int = cls.__calc_absolute_margin(data, niche, target_warehouse)
+        relative_margin: float = cls.__calc_relative_margin(data, niche, target_warehouse)
+        roi: float = cls.__calc_roi(data, niche, target_warehouse)
         return SimpleEconomyResult(
             result_cost=data.product_exist_cost,
             logistic_price=logistic_price,
@@ -85,54 +74,56 @@ class SimpleEconomyCalculator(Calculator):
             roi=roi
         )
 
-    @staticmethod
-    def __calc_recommended_result(data: SimpleEconomyCalculateData,
+    @classmethod
+    def __calc_recommended_result(cls, data: SimpleEconomyCalculateData,
                                   niche: Niche, target_warehouse: Warehouse) -> SimpleEconomyResult:
-        recommended_cost = SimpleEconomyCalculator.__get_recommended_cost(data, niche, target_warehouse)
+        recommended_cost = cls.__get_recommended_cost(data, niche, target_warehouse)
         recommended_data = dataclasses.replace(data)
         recommended_data.product_exist_cost = recommended_cost
-        return SimpleEconomyCalculator.__calc_result(recommended_data, niche, target_warehouse)
+        return cls.__calc_result(recommended_data, niche, target_warehouse)
 
-    @staticmethod
-    def __get_recommended_cost(data: SimpleEconomyCalculateData,
+    @classmethod
+    def __get_recommended_cost(cls, data: SimpleEconomyCalculateData,
                                niche: Niche, target_warehouse: Warehouse) -> int:
-        logistic_price: int = SimpleEconomyCalculator.__calc_logistic_price(data, target_warehouse)
-        storage_price: int = SimpleEconomyCalculator.__calc_storage_price(data, target_warehouse)
+        logistic_price: int = cls.__calc_logistic_price(data, target_warehouse)
+        storage_price: int = cls.__calc_storage_price(data, target_warehouse)
         mean_concurrent_cost: int = niche.get_mean_concurrent_cost(data.cost_price, logistic_price, storage_price)
         concurrent_data = dataclasses.replace(data)
         concurrent_data.product_exist_cost = mean_concurrent_cost
-        concurrent_economy_result = SimpleEconomyCalculator.__calc_result(concurrent_data, niche, target_warehouse)
+        concurrent_economy_result = cls.__calc_result(concurrent_data, niche, target_warehouse)
         return int(
             mean_concurrent_cost
             + concurrent_economy_result.purchase_cost
             + concurrent_economy_result.marketplace_expanses
         )
 
-    @staticmethod
-    def __calc_roi(data: SimpleEconomyCalculateData, niche: Niche, target_warehouse: Warehouse) -> float:
-        purchase_cost: int = SimpleEconomyCalculator.__calc_purchase_cost(data)
-        return SimpleEconomyCalculator.__calc_absolute_margin(data, niche, target_warehouse) / purchase_cost
+    @classmethod
+    def __calc_roi(cls, data: SimpleEconomyCalculateData, niche: Niche, target_warehouse: Warehouse) -> float:
+        purchase_cost: int = cls.__calc_purchase_cost(data)
+        return cls.__calc_absolute_margin(data, niche, target_warehouse) / purchase_cost
 
-    @staticmethod
-    def __calc_relative_margin(data: SimpleEconomyCalculateData, niche: Niche, target_warehouse: Warehouse) -> float:
-        return SimpleEconomyCalculator.__calc_absolute_margin(data, niche, target_warehouse) / data.product_exist_cost
+    @classmethod
+    def __calc_relative_margin(cls, data: SimpleEconomyCalculateData, niche: Niche,
+                               target_warehouse: Warehouse) -> float:
+        return cls.__calc_absolute_margin(data, niche, target_warehouse) / data.product_exist_cost
 
-    @staticmethod
-    def __calc_absolute_margin(data: SimpleEconomyCalculateData, niche: Niche, target_warehouse: Warehouse) -> int:
+    @classmethod
+    def __calc_absolute_margin(cls, data: SimpleEconomyCalculateData, niche: Niche, target_warehouse: Warehouse) -> int:
         product_cost: int = data.product_exist_cost
-        purchase_cost: int = SimpleEconomyCalculator.__calc_purchase_cost(data)
-        marketplace_expanses: int = SimpleEconomyCalculator.__calc_marketplace_expanses(data, niche, target_warehouse)
+        purchase_cost: int = cls.__calc_purchase_cost(data)
+        marketplace_expanses: int = cls.__calc_marketplace_expanses(data, niche, target_warehouse)
         return int(
             product_cost - marketplace_expanses - purchase_cost
         )
 
-    @staticmethod
-    def __calc_marketplace_expanses(data: SimpleEconomyCalculateData, niche: Niche, target_warehouse: Warehouse) -> int:
+    @classmethod
+    def __calc_marketplace_expanses(cls, data: SimpleEconomyCalculateData, niche: Niche,
+                                    target_warehouse: Warehouse) -> int:
         product_cost = data.product_exist_cost
         niche_commission = niche.commissions[target_warehouse.handler_type]
         niche_return_percent = niche.returned_percent
-        logistic_price: int = SimpleEconomyCalculator.__calc_logistic_price(data, target_warehouse)
-        storage_price: int = SimpleEconomyCalculator.__calc_storage_price(data, target_warehouse)
+        logistic_price: int = cls.__calc_logistic_price(data, target_warehouse)
+        storage_price: int = cls.__calc_storage_price(data, target_warehouse)
         return int(
             niche_commission * product_cost
             + storage_price * DAYS_IN_MONTH
@@ -140,8 +131,8 @@ class SimpleEconomyCalculator(Calculator):
             + niche_return_percent * _RETURN_PRICE
         )
 
-    @staticmethod
-    def __calc_purchase_cost(data: SimpleEconomyCalculateData) -> int:
+    @classmethod
+    def __calc_purchase_cost(cls, data: SimpleEconomyCalculateData) -> int:
         cost_price = data.cost_price
         if isinstance(data, TransitEconomyCalculateData):
             transit_price = data.transit_price
@@ -149,12 +140,12 @@ class SimpleEconomyCalculator(Calculator):
             return int(cost_price + transit_price / transit_count)
         return cost_price
 
-    @staticmethod
-    def __calc_logistic_price(data: SimpleEconomyCalculateData, warehouse: Warehouse) -> int:
-        is_oversize: bool = SimpleEconomyCalculator.__is_oversize(data)
+    @classmethod
+    def __calc_logistic_price(cls, data: SimpleEconomyCalculateData, warehouse: Warehouse) -> int:
+        is_oversize: bool = cls.__is_oversize(data)
         if is_oversize:
             return _OVERSIZE_LOGISTIC_PRICE
-        volume: float = SimpleEconomyCalculator.__calc_volume_in_liters(data)
+        volume: float = cls.__calc_volume_in_liters(data)
         if volume <= _MAX_STANDARD_VOLUME_IN_LITERS:
             return int(warehouse.main_coefficient * _STANDARD_WAREHOUSE_LOGISTIC_PRICE)
         over_standard_volume = volume - _MAX_STANDARD_VOLUME_IN_LITERS
@@ -163,12 +154,12 @@ class SimpleEconomyCalculator(Calculator):
                                           over_standard_volume * _ADDITIONAL_WAREHOUSE_LOGISTIC_PRICE)
         )
 
-    @staticmethod
-    def __calc_storage_price(data: SimpleEconomyCalculateData, warehouse: Warehouse) -> int:
-        is_oversize: bool = SimpleEconomyCalculator.__is_oversize(data)
+    @classmethod
+    def __calc_storage_price(cls, data: SimpleEconomyCalculateData, warehouse: Warehouse) -> int:
+        is_oversize: bool = cls.__is_oversize(data)
         if is_oversize:
             return _OVERSIZE_STORAGE_PRICE
-        volume: float = SimpleEconomyCalculator.__calc_volume_in_liters(data)
+        volume: float = cls.__calc_volume_in_liters(data)
         if volume <= _MAX_STANDARD_VOLUME_IN_LITERS:
             return int(warehouse.main_coefficient * _STANDARD_WAREHOUSE_STORAGE_PRICE)
         over_standard_volume = volume - _MAX_STANDARD_VOLUME_IN_LITERS
@@ -177,8 +168,8 @@ class SimpleEconomyCalculator(Calculator):
                                           over_standard_volume * _ADDITIONAL_WAREHOUSE_STORAGE_PRICE)
         )
 
-    @staticmethod
-    def __is_oversize(data: SimpleEconomyCalculateData) -> bool:
+    @classmethod
+    def __is_oversize(cls, data: SimpleEconomyCalculateData) -> bool:
         mass: int = data.mass
         if mass > _MAX_MASS:
             return True
@@ -186,41 +177,31 @@ class SimpleEconomyCalculator(Calculator):
             return True
         return data.length > _MAX_SIDE_LENGTH or data.width > _MAX_SIDE_LENGTH or data.height > _MAX_SIDE_LENGTH
 
-    @staticmethod
-    def __calc_volume_in_liters(data: SimpleEconomyCalculateData) -> float:
+    @classmethod
+    def __calc_volume_in_liters(cls, data: SimpleEconomyCalculateData) -> float:
         return data.length * data.width * data.height * 0.001
 
 
-@dataclass
-class TransitEconomyResult(SimpleEconomyResult):
-    purchase_investments: int
-    commercial_expanses: int
-    tax_expanses: int
-    absolute_transit_margin: int
-    relative_transit_margin: float
-    transit_roi: float
-
-
 class TransitEconomyCalculator(Calculator):
-    @staticmethod
-    def calculate(data: TransitEconomyCalculateData, niche: Niche,
+    @classmethod
+    def calculate(cls, data: TransitEconomyCalculateData, niche: Niche,
                   user: User, target_warehouse: Warehouse) -> tuple[TransitEconomyResult, TransitEconomyResult]:
         user_result, recommended_result = SimpleEconomyCalculator.calculate(data, niche, target_warehouse)
-        user_transit_result = TransitEconomyCalculator.__calc_transit_result(user_result, data, user)
-        recommended_transit_result = TransitEconomyCalculator.__calc_transit_result(recommended_result, data, user)
+        user_transit_result = cls.__calc_transit_result(user_result, data, user)
+        recommended_transit_result = cls.__calc_transit_result(recommended_result, data, user)
         return user_transit_result, recommended_transit_result
 
-    @staticmethod
-    def __calc_transit_result(simple_result: SimpleEconomyResult,
+    @classmethod
+    def __calc_transit_result(cls, simple_result: SimpleEconomyResult,
                               data: TransitEconomyCalculateData, user: User) -> TransitEconomyResult:
-        purchase_investments: int = TransitEconomyCalculator.__calc_purchase_investments(simple_result, data)
-        commercial_expanses: int = TransitEconomyCalculator.__calc_commercial_expanses(simple_result, data)
-        tax_expanses: int = TransitEconomyCalculator.__calc_tax_expanses(simple_result, data, user)
-        absolute_transit_margin: int = TransitEconomyCalculator.__calc_absolute_transit_margin(simple_result,
-                                                                                               data, user)
-        relative_transit_margin: float = TransitEconomyCalculator.__calc_relative_transit_margin(simple_result,
-                                                                                                 data, user)
-        transit_roi: float = TransitEconomyCalculator.__calc_transit_roi(simple_result, data, user)
+        purchase_investments: int = cls.__calc_purchase_investments(simple_result, data)
+        commercial_expanses: int = cls.__calc_commercial_expanses(simple_result, data)
+        tax_expanses: int = cls.__calc_tax_expanses(simple_result, data, user)
+        absolute_transit_margin: int = cls.__calc_absolute_transit_margin(simple_result,
+                                                                          data, user)
+        relative_transit_margin: float = cls.__calc_relative_transit_margin(simple_result,
+                                                                            data, user)
+        transit_roi: float = cls.__calc_transit_roi(simple_result, data, user)
         return TransitEconomyResult(
             result_cost=simple_result.result_cost,
             logistic_price=simple_result.logistic_price,
@@ -239,58 +220,58 @@ class TransitEconomyCalculator(Calculator):
             transit_roi=transit_roi
         )
 
-    @staticmethod
-    def __calc_transit_roi(simple_result: SimpleEconomyResult,
+    @classmethod
+    def __calc_transit_roi(cls, simple_result: SimpleEconomyResult,
                            data: TransitEconomyCalculateData, user: User) -> float:
-        purchase_investments: int = TransitEconomyCalculator.__calc_purchase_investments(simple_result, data)
-        absolute_transit_margin: int = TransitEconomyCalculator.__calc_absolute_transit_margin(simple_result,
-                                                                                               data, user)
+        purchase_investments: int = cls.__calc_purchase_investments(simple_result, data)
+        absolute_transit_margin: int = cls.__calc_absolute_transit_margin(simple_result,
+                                                                          data, user)
         return absolute_transit_margin / purchase_investments
 
-    @staticmethod
-    def __calc_relative_transit_margin(simple_result: SimpleEconomyResult,
+    @classmethod
+    def __calc_relative_transit_margin(cls, simple_result: SimpleEconomyResult,
                                        data: TransitEconomyCalculateData, user: User) -> float:
-        return (TransitEconomyCalculator.__calc_absolute_transit_margin(simple_result, data, user)
+        return (cls.__calc_absolute_transit_margin(simple_result, data, user)
                 / (simple_result.result_cost * data.transit_count))
 
-    @staticmethod
-    def __calc_absolute_transit_margin(simple_result: SimpleEconomyResult,
+    @classmethod
+    def __calc_absolute_transit_margin(cls, simple_result: SimpleEconomyResult,
                                        data: TransitEconomyCalculateData, user: User) -> int:
-        tax_expanses = TransitEconomyCalculator.__calc_tax_expanses(simple_result, data, user)
-        clear_profit = TransitEconomyCalculator.__calc_clear_profit(simple_result, data)
+        tax_expanses = cls.__calc_tax_expanses(simple_result, data, user)
+        clear_profit = cls.__calc_clear_profit(simple_result, data)
         return int(clear_profit - tax_expanses)
 
-    @staticmethod
-    def __calc_tax_expanses(simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData, user: User):
+    @classmethod
+    def __calc_tax_expanses(cls, simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData, user: User):
         return int(
-            user.profit_tax * TransitEconomyCalculator.__calc_taxed_sum(simple_result, data, user)
+            user.profit_tax * cls.__calc_taxed_sum(simple_result, data, user)
         )
 
-    @staticmethod
-    def __calc_taxed_sum(simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData, user: User) -> int:
+    @classmethod
+    def __calc_taxed_sum(cls, simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData, user: User) -> int:
         if user.profit_tax <= _SELF_EMPLOYED_TAX:
             return int(
                 simple_result.result_cost * data.transit_count
             )
-        return TransitEconomyCalculator.__calc_clear_profit(simple_result, data)
+        return cls.__calc_clear_profit(simple_result, data)
 
-    @staticmethod
-    def __calc_clear_profit(simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData) -> int:
-        purchase_investments = TransitEconomyCalculator.__calc_purchase_investments(simple_result, data)
-        commercial_expanses = TransitEconomyCalculator.__calc_commercial_expanses(simple_result, data)
+    @classmethod
+    def __calc_clear_profit(cls, simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData) -> int:
+        purchase_investments = cls.__calc_purchase_investments(simple_result, data)
+        commercial_expanses = cls.__calc_commercial_expanses(simple_result, data)
         expanses = purchase_investments + commercial_expanses
         return int(
             simple_result.result_cost * data.transit_count - expanses
         )
 
-    @staticmethod
-    def __calc_commercial_expanses(simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData) -> int:
+    @classmethod
+    def __calc_commercial_expanses(cls, simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData) -> int:
         return int(
             data.transit_count * simple_result.marketplace_expanses
         )
 
-    @staticmethod
-    def __calc_purchase_investments(simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData) -> int:
+    @classmethod
+    def __calc_purchase_investments(cls, simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData) -> int:
         return int(
             data.transit_count * simple_result.purchase_cost
         )

@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 
 class Calculator:
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def calculate(*args):
+    def calculate(cls, *args):
         pass

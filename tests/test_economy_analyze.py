@@ -2,9 +2,10 @@ import unittest
 
 from jorm.market.infrastructure import Niche, HandlerType, Warehouse, Address
 from jorm.market.person import UserPrivilege, User
+from jorm.market.service import SimpleEconomyResult, TransitEconomyResult
 
 from jarvis_calc.calculators.economy_analyze import SimpleEconomyCalculator, SimpleEconomyCalculateData, \
-    SimpleEconomyResult, TransitEconomyCalculator, TransitEconomyCalculateData, TransitEconomyResult
+    TransitEconomyCalculator, TransitEconomyCalculateData
 from tests.base_test import BaseCalcTest
 
 
