@@ -28,17 +28,8 @@ class DBController:
     def add_marketplace_api_key(self, api_key: str, user_id: int, marketplace_id: int) -> None:
         self.__user_info_changer.add_marketplace_api_key(api_key, user_id, marketplace_id)
 
-    def update_all_categories(self, marketplace_id: int) -> None:
-        self.__jorm_changer.update_all_categories(marketplace_id)
-
-    def update_all_niches(self, category_id: int, marketplace_id: int) -> None:
-        self.__jorm_changer.update_all_niches(category_id, marketplace_id)
-
     def update_niche(self, niche_id: int, category_id: int, marketplace_id: int) -> Niche:
         return self.__jorm_changer.update_niche(niche_id, category_id, marketplace_id)
-
-    def update_product(self, product_id: int, marketplace_id: int) -> Product:
-        return self.__jorm_changer.update_product(product_id, marketplace_id)
 
     def update_session_tokens(self, user_id: int, old_update_token: str,
                               new_access_token: str, new_update_token: str) -> None:
