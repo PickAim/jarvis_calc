@@ -16,9 +16,7 @@ _MAX_STANDARD_VOLUME_IN_LITERS = 5
 _RETURN_PRICE = 50_00
 _OVERSIZE_LOGISTIC_PRICE = 1000_00
 _OVERSIZE_STORAGE_PRICE = 2_157
-_ADDITIONAL_WAREHOUSE_LOGISTIC_PRICE = 5_00
 _STANDARD_WAREHOUSE_LOGISTIC_PRICE = 50_00
-_ADDITIONAL_WAREHOUSE_STORAGE_PRICE = 30
 _STANDARD_WAREHOUSE_STORAGE_PRICE = 30
 
 _NDS_TAX = 0.20
@@ -151,7 +149,7 @@ class SimpleEconomyCalculator(Calculator):
         over_standard_volume = volume - _MAX_STANDARD_VOLUME_IN_LITERS
         return int(
             warehouse.main_coefficient * (_STANDARD_WAREHOUSE_LOGISTIC_PRICE +
-                                          over_standard_volume * _ADDITIONAL_WAREHOUSE_LOGISTIC_PRICE)
+                                          over_standard_volume * _STANDARD_WAREHOUSE_LOGISTIC_PRICE / 10)
         )
 
     @classmethod
@@ -165,7 +163,7 @@ class SimpleEconomyCalculator(Calculator):
         over_standard_volume = volume - _MAX_STANDARD_VOLUME_IN_LITERS
         return int(
             warehouse.main_coefficient * (_STANDARD_WAREHOUSE_STORAGE_PRICE +
-                                          over_standard_volume * _ADDITIONAL_WAREHOUSE_STORAGE_PRICE)
+                                          over_standard_volume * _STANDARD_WAREHOUSE_STORAGE_PRICE / 10)
         )
 
     @classmethod

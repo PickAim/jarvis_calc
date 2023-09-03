@@ -29,20 +29,20 @@ class EconomyAnalyzeTest(BaseCalcTest):
             niche, warehouse)
         self.assertEqual(SimpleEconomyResult(result_cost=300_00,
                                              logistic_price=37_50,
-                                             storage_price=90,
+                                             storage_price=22,
                                              purchase_cost=100_00,
-                                             marketplace_expanses=120_50,
-                                             absolute_margin=79_50,
-                                             relative_margin=0.265,
-                                             roi=0.795), result[0])
-        self.assertEqual(SimpleEconomyResult(result_cost=495_93,
+                                             marketplace_expanses=100_10,
+                                             absolute_margin=99_90,
+                                             relative_margin=0.333,
+                                             roi=0.999), result[0])
+        self.assertEqual(SimpleEconomyResult(result_cost=475_53,
                                              logistic_price=37_50,
-                                             storage_price=90,
+                                             storage_price=22,
                                              purchase_cost=100_00,
-                                             marketplace_expanses=153_80,
-                                             absolute_margin=242_13,
-                                             relative_margin=0.4882342266045611,
-                                             roi=2.4213), result[1])
+                                             marketplace_expanses=129_94,
+                                             absolute_margin=245_59,
+                                             relative_margin=0.5164553235337414,
+                                             roi=2.4559), result[1])
 
     def test_transit_unit_economy_calc(self):
         calculator = TransitEconomyCalculator()
@@ -68,32 +68,32 @@ class EconomyAnalyzeTest(BaseCalcTest):
             niche, client, warehouse)
         self.assertEqual(TransitEconomyResult(result_cost=300_00,
                                               logistic_price=37_50,
-                                              storage_price=90,
+                                              storage_price=22,
                                               purchase_cost=150_00,
-                                              marketplace_expanses=120_50,
-                                              absolute_margin=29_50,
-                                              relative_margin=0.09833333333333333,
-                                              roi=0.19666666666666666,
+                                              marketplace_expanses=100_10,
+                                              absolute_margin=49_90,
+                                              relative_margin=0.16633333333333333,
+                                              roi=0.33266666666666667,
                                               purchase_investments=15000_00,
-                                              commercial_expanses=12050_00,
+                                              commercial_expanses=10010_00,
                                               tax_expanses=1800_00,
-                                              absolute_transit_margin=1150_00,
-                                              relative_transit_margin=0.03833333333333333,
-                                              transit_roi=0.07666666666666666), result[0])
-        self.assertEqual(TransitEconomyResult(result_cost=545_93,
+                                              absolute_transit_margin=3190_00,
+                                              relative_transit_margin=0.10633333333333334,
+                                              transit_roi=0.21266666666666667), result[0])
+        self.assertEqual(TransitEconomyResult(result_cost=525_53,
                                               logistic_price=37_50,
-                                              storage_price=90,
+                                              storage_price=22,
                                               purchase_cost=150_00,
-                                              marketplace_expanses=162_30,
-                                              absolute_margin=233_63,
-                                              relative_margin=0.4279486381037862,
-                                              roi=1.5575333333333334,
+                                              marketplace_expanses=138_44,
+                                              absolute_margin=237_09,
+                                              relative_margin=0.4511445588263277,
+                                              roi=1.5806,
                                               purchase_investments=15000_00,
-                                              commercial_expanses=16230_00,
-                                              tax_expanses=3275_58,
-                                              absolute_transit_margin=20087_42,
-                                              relative_transit_margin=0.3679486381037862,
-                                              transit_roi=1.3391613333333334), result[1])
+                                              commercial_expanses=13844_00,
+                                              tax_expanses=3153_18,
+                                              absolute_transit_margin=20555_82,
+                                              relative_transit_margin=0.3911445588263277,
+                                              transit_roi=1.370388), result[1])
 
 
 if __name__ == '__main__':
