@@ -3,9 +3,8 @@ from jorm.jarvis.db_update import UserInfoChanger, JORMChanger
 from jorm.market.infrastructure import Warehouse, Niche, Category, Marketplace
 from jorm.market.items import Product
 from jorm.market.person import Account, User
-from jorm.market.service import SimpleEconomyRequest, RequestInfo, TransitEconomyRequest
+from jorm.market.service import SimpleEconomySaveObject, TransitEconomySaveObject
 from jorm.server.token.types import TokenType
-from jorm.support.calculation import SimpleEconomyResult, TransitEconomyResult
 
 
 class DBController:
@@ -40,13 +39,11 @@ class DBController:
                                          user_id: int) -> None:
         self.__user_info_changer.update_session_tokens_by_imprint(access_token, update_token, imprint_token, user_id)
 
-    def save_simple_economy_request(self, request: SimpleEconomyRequest, result: SimpleEconomyResult,
-                                    request_info: RequestInfo, user_id: int) -> int:
-        return self.__jorm_changer.save_simple_economy_request(request, result, request_info, user_id)
+    def save_simple_economy_request(self, save_object: SimpleEconomySaveObject, user_id: int) -> int:
+        return self.__jorm_changer.save_simple_economy_request(save_object, user_id)
 
-    def save_transit_economy_request(self, request: TransitEconomyRequest,
-                                     result: TransitEconomyResult, request_info: RequestInfo, user_id: int) -> int:
-        return self.__jorm_changer.save_transit_economy_request(request, result, request_info, user_id)
+    def save_transit_economy_request(self, save_object: TransitEconomySaveObject, user_id: int) -> int:
+        return self.__jorm_changer.save_transit_economy_request(save_object, user_id)
 
     def save_all_tokens(self, access_token: str, update_token: str, imprint_token: str, user_id: int) -> None:
         self.__user_info_changer.save_all_tokens(access_token, update_token, imprint_token, user_id)
@@ -78,6 +75,9 @@ class DBController:
     def get_niche(self, niche_name: str, category_id: int, marketplace_id: int) -> Niche:
         return self.__jorm_collector.get_niche(niche_name, category_id, marketplace_id)
 
+    def get_niche_by_id(self, niche_id: int, category_id: int, marketplace_id: int) -> Niche:
+        return self.__jorm_collector.get_niche_by_id(niche_id, category_id, marketplace_id)
+
     def get_warehouse(self, warehouse_name: str, marketplace_id: int) -> Warehouse:
         return self.__jorm_collector.get_warehouse(warehouse_name, marketplace_id)
 
@@ -105,15 +105,11 @@ class DBController:
     def get_all_warehouses_atomic(self, marketplace_id: int) -> dict[int, Warehouse]:
         return self.__jorm_collector.get_all_warehouses_atomic(marketplace_id)
 
-    def get_all_unit_economy_results(self, user_id: int) \
-            -> list[
-                tuple[
-                    SimpleEconomyRequest | TransitEconomyRequest,
-                    SimpleEconomyResult | TransitEconomyResult,
-                    RequestInfo
-                ]
-            ]:
-        return self.__jorm_collector.get_all_unit_economy_results(user_id)
+    def get_all_simple_economy_results(self, user_id: int) -> list[SimpleEconomySaveObject]:
+        return self.__jorm_collector.get_all_simple_economy_results(user_id)
+
+    def get_all_transit_economy_results(self, user_id: int) -> list[TransitEconomySaveObject]:
+        return self.__jorm_collector.get_all_transit_economy_results(user_id)
 
     def get_products_by_user(self, user_id: int, marketplace_id: int) -> dict[int, Product]:
         return self.__jorm_collector.get_products_by_user(user_id, marketplace_id)
@@ -133,5 +129,8 @@ class DBController:
     def delete_tokens_for_user(self, user_id: int, imprint_token: str):
         self.__user_info_changer.delete_tokens_for_user(user_id, imprint_token)
 
-    def delete_unit_economy_request_for_user(self, request_id: int, user_id: int) -> None:
-        self.__jorm_changer.delete_unit_economy_request(request_id, user_id)
+    def delete_simple_economy_request(self, request_id: int, user_id: int) -> None:
+        self.__jorm_changer.delete_simple_economy_request(request_id, user_id)
+
+    def delete_transit_economy_request(self, request_id: int, user_id: int) -> None:
+        self.__jorm_changer.delete_transit_economy_request(request_id, user_id)
