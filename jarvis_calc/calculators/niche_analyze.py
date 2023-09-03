@@ -11,19 +11,19 @@ from jarvis_calc.calculators.calculator_base import Calculator
 
 
 class NicheHistCalculator(Calculator):
-    @staticmethod
-    def calculate(niche: Niche) -> tuple[list[int], list[int]]:
+    @classmethod
+    def calculate(cls, niche: Niche) -> tuple[list[int], list[int]]:
         cost_data: ndarray[int] = niche.cost_data.copy()
         n_samples: int = 10
         return NicheHistWithNCalculator.calculate(cost_data, n_samples)
 
 
 class NicheHistWithNCalculator(Calculator):
-    @staticmethod
-    def calculate(cost_data: ndarray[int], n_samples: int) -> tuple[list[int], list[int]]:
+    @classmethod
+    def calculate(cls, cost_data: ndarray[int], n_samples: int) -> tuple[list[int], list[int]]:
         if len(cost_data) <= 0:
             return [], []
-        return NicheHistWithNCalculator.__frequency_calc(cost_data, n_samples)
+        return cls.__frequency_calc(cost_data, n_samples)
         # possible needed to correct frequencies, disabled for now
         # base_keys, base_frequencies = NicheHistWithNCalculator.__frequency_calc(cost_data, n_samples)
         # keys = base_keys.copy()
@@ -59,13 +59,13 @@ class NicheHistWithNCalculator(Calculator):
         #         break
         # return list(keys), list(frequencies)
 
-    @staticmethod
-    def __frequency_calc(costs: ndarray[int], n_samples: int) -> tuple[list[int], list[int]]:
+    @classmethod
+    def __frequency_calc(cls, costs: ndarray[int], n_samples: int) -> tuple[list[int], list[int]]:
         res = np.histogram(costs, n_samples)
         return list(map(int, res[1][:-1])), list(res[0])
 
-    @staticmethod
-    def __get_cleared_mean(lst: list[int]) -> int:
+    @classmethod
+    def __get_cleared_mean(cls, lst: list[int]) -> int:
         result: int = 0
         clear_frequency = np.array([x for x in lst if x != 0])
         for freq in clear_frequency:
@@ -74,8 +74,8 @@ class NicheHistWithNCalculator(Calculator):
 
 
 class NicheCharacteristicsCalculator(Calculator):
-    @staticmethod
-    def calculate(niche: Niche) -> NicheCharacteristicsCalculateResult:
+    @classmethod
+    def calculate(cls, niche: Niche) -> NicheCharacteristicsCalculateResult:
         result_card_count: int = len(niche.products)
         result_products_with_trades_count = 0
         result_products_trade_count = 0
@@ -84,7 +84,7 @@ class NicheCharacteristicsCalculator(Calculator):
 
         top_100_profit = 0
         freq_keys, _ = NicheHistWithNCalculator.calculate(niche.cost_data, 10)
-        trade_profits = NicheCharacteristicsCalculator.__calculate_trade_profits(niche.products, freq_keys)
+        trade_profits = cls.__calculate_trade_profits(niche.products, freq_keys)
         max_idx = 0 if len(trade_profits) == 0 else int(np.argmax(trade_profits))
         for product in niche.products:
             product_trade_count = product.history.get_last_month_trade_count()
@@ -113,8 +113,8 @@ class NicheCharacteristicsCalculator(Calculator):
             maximum_profit_idx=max_idx
         )
 
-    @staticmethod
-    def __calculate_trade_profits(products: list[Product], freq_keys: list[int],
+    @classmethod
+    def __calculate_trade_profits(cls, products: list[Product], freq_keys: list[int],
                                   from_date: datetime.datetime = datetime.datetime.utcnow()) -> list[int]:
         trade_profits: list[int] = [0 for _ in range(len(freq_keys))]
         sorted_products = sorted(products, key=lambda prod: prod.cost, reverse=True)
@@ -129,8 +129,8 @@ class NicheCharacteristicsCalculator(Calculator):
 
 
 class GreenTradeZoneCalculator(Calculator):
-    @staticmethod
-    def calculate(niche: Niche,
+    @classmethod
+    def calculate(cls, niche: Niche,
                   from_date: datetime.datetime = datetime.datetime.utcnow()) -> GreenTradeZoneCalculateResult:
         res = np.histogram(niche.cost_data, 10)
         freq_keys, frequencies = list(map(int, res[1][:-1])), list(res[0])
