@@ -25,6 +25,15 @@ class DBController:
             raise Exception(str(type(DBController)) + ": unexpected token type")
         return rnd_part_from_db == rnd_part_to_check
 
+    def check_token_exist(self, user_id: int, imprint: str, token_type: int) -> bool:
+        if token_type == TokenType.ACCESS.value:
+            rnd_part_from_db: str = self.__user_info_collector.get_token_rnd_part(user_id, imprint, TokenType.ACCESS)
+        elif token_type == TokenType.UPDATE.value:
+            rnd_part_from_db: str = self.__user_info_collector.get_token_rnd_part(user_id, imprint, TokenType.UPDATE)
+        else:
+            raise Exception(str(type(DBController)) + ": unexpected token type")
+        return rnd_part_from_db is not None
+
     def add_marketplace_api_key(self, api_key: str, user_id: int, marketplace_id: int) -> None:
         self.__user_info_changer.add_marketplace_api_key(api_key, user_id, marketplace_id)
 
