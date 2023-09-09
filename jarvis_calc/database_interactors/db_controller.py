@@ -25,6 +25,15 @@ class DBController:
             raise Exception(str(type(DBController)) + ": unexpected token type")
         return rnd_part_from_db == rnd_part_to_check
 
+    def check_token_exist(self, user_id: int, imprint: str, token_type: int) -> bool:
+        if token_type == TokenType.ACCESS.value:
+            rnd_part_from_db: str = self.__user_info_collector.get_token_rnd_part(user_id, imprint, TokenType.ACCESS)
+        elif token_type == TokenType.UPDATE.value:
+            rnd_part_from_db: str = self.__user_info_collector.get_token_rnd_part(user_id, imprint, TokenType.UPDATE)
+        else:
+            raise Exception(str(type(DBController)) + ": unexpected token type")
+        return rnd_part_from_db is not None
+
     def add_marketplace_api_key(self, api_key: str, user_id: int, marketplace_id: int) -> None:
         self.__user_info_changer.add_marketplace_api_key(api_key, user_id, marketplace_id)
 
@@ -75,8 +84,8 @@ class DBController:
     def get_niche(self, niche_name: str, category_id: int, marketplace_id: int) -> Niche:
         return self.__jorm_collector.get_niche(niche_name, category_id, marketplace_id)
 
-    def get_niche_by_id(self, niche_id: int, category_id: int, marketplace_id: int) -> Niche:
-        return self.__jorm_collector.get_niche_by_id(niche_id, category_id, marketplace_id)
+    def get_niche_by_id(self, niche_id: int) -> Niche:
+        return self.__jorm_collector.get_niche_by_id(niche_id)
 
     def get_warehouse(self, warehouse_name: str, marketplace_id: int) -> Warehouse:
         return self.__jorm_collector.get_warehouse(warehouse_name, marketplace_id)

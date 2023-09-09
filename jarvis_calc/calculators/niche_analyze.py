@@ -133,7 +133,7 @@ class GreenTradeZoneCalculator(Calculator):
     def calculate(cls, niche: Niche,
                   from_date: datetime.datetime = datetime.datetime.utcnow()) -> GreenTradeZoneCalculateResult:
         res = np.histogram(niche.cost_data, 10)
-        freq_keys, frequencies = list(map(int, res[1][:-1])), list(res[0])
+        freq_keys, frequencies = list(map(int, res[1][:-1])), list(map(int, res[0]))
         sorted_products = sorted(niche.products, key=lambda prod: prod.cost, reverse=True)
 
         segment_profits: list[int] = [0 for _ in range(len(freq_keys))]
@@ -150,7 +150,7 @@ class GreenTradeZoneCalculator(Calculator):
                 segment_profits[j] += product_profit
 
         segments: list[tuple[int, int]] = [(freq_keys[i], freq_keys[i + 1]) for i in range(len(freq_keys) - 1)]
-        segments.append((freq_keys[len(freq_keys) - 1], sorted_products[0].cost))
+        segments.append((freq_keys[len(freq_keys) - 1], sorted_products[0].cost if len(sorted_products) > 0 else 0))
 
         mean_segment_profit: list[int] = [
             segment_profits[i] // frequencies[i] if frequencies[i] != 0 else 0
@@ -176,7 +176,6 @@ class GreenTradeZoneCalculator(Calculator):
 
         best_segment_idx: int = max(counter, key=counter.get)
         return GreenTradeZoneCalculateResult(
-            frequencies=frequencies,
             segments=segments,
             best_segment_idx=best_segment_idx,
             segment_profits=segment_profits,

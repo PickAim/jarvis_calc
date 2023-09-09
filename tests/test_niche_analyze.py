@@ -53,7 +53,6 @@ class NicheAnalyzeTest(BaseCalcTest):
                           (2085300, 2345550),
                           (2345550, 2605800.0)],
                          result.segments)
-        self.assertEqual([3795, 252, 40, 19, 4, 1, 0, 2, 0, 1], result.frequencies)
         self.assertEqual([7204211599, 224035864, 40938752, 79150750, 0, 0, 4103700, 0, 3945400, 2605800],
                          result.segment_profits)
         self.assertEqual([1898342, 889031, 1023468, 4165828, 0, 0, 0, 0, 0, 2605800], result.mean_segment_profit)
