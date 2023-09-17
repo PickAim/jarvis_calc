@@ -5,6 +5,7 @@ from jorm.market.items import Product
 from jorm.market.person import Account, User
 from jorm.market.service import SimpleEconomySaveObject, TransitEconomySaveObject
 from jorm.server.token.types import TokenType
+from jorm.support.types import EconomyConstants
 
 
 class DBController:
@@ -48,6 +49,9 @@ class DBController:
                                          user_id: int) -> None:
         self.__user_info_changer.update_session_tokens_by_imprint(access_token, update_token, imprint_token, user_id)
 
+    def update_economy_constants(self, marketplace_id: int, economy_constants: EconomyConstants) -> None:
+        self.__jorm_changer.update_economy_constants(marketplace_id, economy_constants)
+
     def save_simple_economy_request(self, save_object: SimpleEconomySaveObject, user_id: int) -> int:
         return self.__jorm_changer.save_simple_economy_request(save_object, user_id)
 
@@ -69,6 +73,9 @@ class DBController:
     def load_user_warehouse(self, user_id: int, marketplace_id: int) -> list[Warehouse]:
         return self.__jorm_changer.load_user_warehouse(user_id, marketplace_id)
 
+    def get_economy_constants(self, marketplace_id: int) -> EconomyConstants | None:
+        return self.__jorm_collector.get_economy_constants(marketplace_id)
+
     def get_user_by_account(self, account: Account) -> User:
         return self.__user_info_collector.get_user_by_account(account)
 
@@ -87,8 +94,8 @@ class DBController:
     def get_niche_by_id(self, niche_id: int) -> Niche:
         return self.__jorm_collector.get_niche_by_id(niche_id)
 
-    def get_warehouse(self, warehouse_name: str, marketplace_id: int) -> Warehouse:
-        return self.__jorm_collector.get_warehouse(warehouse_name, marketplace_id)
+    def get_warehouse(self, warehouse_id: int) -> Warehouse:
+        return self.__jorm_collector.get_warehouse(warehouse_id)
 
     def get_all_marketplaces(self) -> dict[int, Marketplace]:
         return self.__jorm_collector.get_all_marketplaces()
