@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from jorm.market.infrastructure import Niche, Warehouse
 from jorm.market.person import User
-from jorm.support.calculation import TransitEconomyResult, SimpleEconomyResult
+from jorm.support.calculation import TransitEconomyResult, SimpleEconomyResult, GreenTradeZoneCalculateResult
 from jorm.support.constants import DAYS_IN_MONTH
 from jorm.support.types import EconomyConstants
 
@@ -32,10 +32,11 @@ class SimpleEconomyCalculator(Calculator):
         self.economy_constants: EconomyConstants = economy_constants
 
     def calculate(self, data: SimpleEconomyCalculateData,
-                  niche: Niche, target_warehouse: Warehouse) -> tuple[SimpleEconomyResult, SimpleEconomyResult]:
+                  niche: Niche, target_warehouse: Warehouse,
+                  green_zone_result: GreenTradeZoneCalculateResult) -> tuple[SimpleEconomyResult, SimpleEconomyResult]:
         user_result: SimpleEconomyResult = self.__calc_result(data, niche, target_warehouse)
         recommended_result: SimpleEconomyResult = self.__calc_recommended_result(data, niche,
-                                                                                 target_warehouse)
+                                                                                 target_warehouse, green_zone_result)
         return user_result, recommended_result
 
     def __calc_result(self, data: SimpleEconomyCalculateData,
@@ -60,25 +61,17 @@ class SimpleEconomyCalculator(Calculator):
         )
 
     def __calc_recommended_result(self, data: SimpleEconomyCalculateData,
-                                  niche: Niche, target_warehouse: Warehouse) -> SimpleEconomyResult:
-        recommended_cost = self.__get_recommended_cost(data, niche, target_warehouse)
+                                  niche: Niche, target_warehouse: Warehouse,
+                                  green_zone_result: GreenTradeZoneCalculateResult) -> SimpleEconomyResult:
+        recommended_cost = self.__get_recommended_cost(green_zone_result)
         recommended_data = dataclasses.replace(data)
         recommended_data.product_exist_cost = recommended_cost
         return self.__calc_result(recommended_data, niche, target_warehouse)
 
-    def __get_recommended_cost(self, data: SimpleEconomyCalculateData,
-                               niche: Niche, target_warehouse: Warehouse) -> int:
-        logistic_price: int = self.__calc_logistic_price(data, target_warehouse)
-        storage_price: int = self.__calc_storage_price(data, target_warehouse)
-        mean_concurrent_cost: int = niche.get_mean_concurrent_cost(data.cost_price, logistic_price, storage_price)
-        concurrent_data = dataclasses.replace(data)
-        concurrent_data.product_exist_cost = mean_concurrent_cost
-        concurrent_economy_result = self.__calc_result(concurrent_data, niche, target_warehouse)
-        return int(
-            mean_concurrent_cost
-            + concurrent_economy_result.purchase_cost
-            + concurrent_economy_result.marketplace_expanses
-        )
+    @staticmethod
+    def __get_recommended_cost(green_zone_result: GreenTradeZoneCalculateResult) -> int:
+        best_segment = green_zone_result.segments[green_zone_result.best_segment_idx]
+        return int(sum(best_segment) / len(best_segment))
 
     def __calc_roi(self, data: SimpleEconomyCalculateData, niche: Niche, target_warehouse: Warehouse) -> float:
         purchase_cost: int = self.__calc_purchase_cost(data)
@@ -168,9 +161,11 @@ class TransitEconomyCalculator(Calculator):
         self.economy_constants: EconomyConstants = economy_constants
 
     def calculate(self, data: TransitEconomyCalculateData, niche: Niche,
-                  user: User, target_warehouse: Warehouse) -> tuple[TransitEconomyResult, TransitEconomyResult]:
+                  user: User, target_warehouse: Warehouse, green_zone_result: GreenTradeZoneCalculateResult) \
+            -> tuple[TransitEconomyResult, TransitEconomyResult]:
         user_result, recommended_result = SimpleEconomyCalculator(self.economy_constants).calculate(data, niche,
-                                                                                                    target_warehouse)
+                                                                                                    target_warehouse,
+                                                                                                    green_zone_result)
         user_transit_result = self.__calc_transit_result(user_result, data, user)
         recommended_transit_result = self.__calc_transit_result(recommended_result, data, user)
         return user_transit_result, recommended_transit_result
