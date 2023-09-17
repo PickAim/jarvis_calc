@@ -3,20 +3,37 @@ import unittest
 from jorm.market.infrastructure import Niche, HandlerType, Warehouse, Address
 from jorm.market.person import UserPrivilege, User
 from jorm.support.calculation import SimpleEconomyResult, TransitEconomyResult
+from jorm.support.types import EconomyConstants
 
-from jarvis_calc.calculators.economy_analyze import SimpleEconomyCalculator, SimpleEconomyCalculateData, \
-    TransitEconomyCalculator, TransitEconomyCalculateData
+from jarvis_calc.calculators.economy_analyze import (
+    SimpleEconomyCalculator,
+    SimpleEconomyCalculateData,
+    TransitEconomyCalculator,
+    TransitEconomyCalculateData,
+)
 from tests.base_test import BaseCalcTest
+
+ECONOMY_CONSTANT = EconomyConstants(
+    max_mass=25,
+    max_side_sum=200,
+    max_side_length=120,
+    max_standard_volume_in_liters=5,
+    return_price=50_00,
+    oversize_logistic_price=1000_00,
+    oversize_storage_price=2_157,
+    standard_warehouse_logistic_price=50_00,
+    standard_warehouse_storage_price=30,
+    nds_tax=0.20,
+    commercial_tax=0.15,
+    self_employed_tax=0.06,
+)
 
 
 class EconomyAnalyzeTest(BaseCalcTest):
     def test_unit_economy_calc(self):
-        calculator = SimpleEconomyCalculator()
+        calculator = SimpleEconomyCalculator(ECONOMY_CONSTANT)
         niche: Niche = self.create_test_niche()
-        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[],
-                              basic_logistic_to_customer_commission=55_00, additional_logistic_to_customer_commission=0,
-                              logistic_from_customer_commission=33_00, basic_storage_commission=15,
-                              additional_storage_commission=0, mono_palette_storage_commission=10)
+        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
         result = calculator.calculate(
             SimpleEconomyCalculateData(
                 product_exist_cost=300_00,
@@ -45,13 +62,9 @@ class EconomyAnalyzeTest(BaseCalcTest):
                                              roi=2.4559), result[1])
 
     def test_transit_unit_economy_calc(self):
-        calculator = TransitEconomyCalculator()
+        calculator = TransitEconomyCalculator(ECONOMY_CONSTANT)
         niche: Niche = self.create_test_niche()
-        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[],
-                              basic_logistic_to_customer_commission=55_00,
-                              additional_logistic_to_customer_commission=0,
-                              logistic_from_customer_commission=33_00, basic_storage_commission=15,
-                              additional_storage_commission=0, mono_palette_storage_commission=10)
+        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
         client = User(name="client", privilege=UserPrivilege.BASIC, profit_tax=0.06)
         result = calculator.calculate(
             TransitEconomyCalculateData(
@@ -62,8 +75,9 @@ class EconomyAnalyzeTest(BaseCalcTest):
                 height=10,
                 mass=1,
 
-                transit_count=100,
-                transit_price=5000_00
+                logistic_count=100,
+                logistic_price=5000_00,
+                transit_cost_for_cubic_meter=10_00
             ),
             niche, client, warehouse)
         self.assertEqual(TransitEconomyResult(result_cost=300_00,
