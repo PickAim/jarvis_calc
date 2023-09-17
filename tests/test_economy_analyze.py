@@ -34,7 +34,7 @@ class EconomyAnalyzeTest(BaseCalcTest):
     def test_unit_economy_calc(self):
         calculator = SimpleEconomyCalculator(ECONOMY_CONSTANT)
         niche: Niche = self.create_test_niche()
-        green_zone_result = GreenTradeZoneCalculator.calculate(niche)
+        green_zone_result = GreenTradeZoneCalculator().calculate(niche)
         warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
         result = calculator.calculate(
             SimpleEconomyCalculateData(
@@ -66,7 +66,7 @@ class EconomyAnalyzeTest(BaseCalcTest):
     def test_transit_unit_economy_calc(self):
         calculator = TransitEconomyCalculator(ECONOMY_CONSTANT)
         niche: Niche = self.create_test_niche()
-        green_zone_result = GreenTradeZoneCalculator.calculate(niche)
+        green_zone_result = GreenTradeZoneCalculator().calculate(niche)
         warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
         client = User(name="client", privilege=UserPrivilege.BASIC, profit_tax=0.06)
         result = calculator.calculate(
