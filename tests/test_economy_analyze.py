@@ -11,6 +11,7 @@ from jarvis_calc.calculators.economy_analyze import (
     TransitEconomyCalculator,
     TransitEconomyCalculateData,
 )
+from jarvis_calc.calculators.niche_analyze import GreenTradeZoneCalculator
 from tests.base_test import BaseCalcTest
 
 ECONOMY_CONSTANT = EconomyConstants(
@@ -33,6 +34,7 @@ class EconomyAnalyzeTest(BaseCalcTest):
     def test_unit_economy_calc(self):
         calculator = SimpleEconomyCalculator(ECONOMY_CONSTANT)
         niche: Niche = self.create_test_niche()
+        green_zone_result = GreenTradeZoneCalculator.calculate(niche)
         warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
         result = calculator.calculate(
             SimpleEconomyCalculateData(
@@ -43,7 +45,7 @@ class EconomyAnalyzeTest(BaseCalcTest):
                 height=10,
                 mass=1
             ),
-            niche, warehouse)
+            niche, warehouse, green_zone_result)
         self.assertEqual(SimpleEconomyResult(result_cost=300_00,
                                              logistic_price=37_50,
                                              storage_price=22,
@@ -52,18 +54,19 @@ class EconomyAnalyzeTest(BaseCalcTest):
                                              absolute_margin=99_90,
                                              relative_margin=0.333,
                                              roi=0.999), result[0])
-        self.assertEqual(SimpleEconomyResult(result_cost=475_53,
+        self.assertEqual(SimpleEconomyResult(result_cost=1334_25,
                                              logistic_price=37_50,
                                              storage_price=22,
                                              purchase_cost=100_00,
-                                             marketplace_expanses=129_94,
-                                             absolute_margin=245_59,
-                                             relative_margin=0.5164553235337414,
-                                             roi=2.4559), result[1])
+                                             marketplace_expanses=275_92,
+                                             absolute_margin=958_33,
+                                             relative_margin=0.7182537005808507,
+                                             roi=9.5833), result[1])
 
     def test_transit_unit_economy_calc(self):
         calculator = TransitEconomyCalculator(ECONOMY_CONSTANT)
         niche: Niche = self.create_test_niche()
+        green_zone_result = GreenTradeZoneCalculator.calculate(niche)
         warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
         client = User(name="client", privilege=UserPrivilege.BASIC, profit_tax=0.06)
         result = calculator.calculate(
@@ -79,7 +82,7 @@ class EconomyAnalyzeTest(BaseCalcTest):
                 logistic_price=5000_00,
                 transit_cost_for_cubic_meter=10_00
             ),
-            niche, client, warehouse)
+            niche, client, warehouse, green_zone_result)
         self.assertEqual(TransitEconomyResult(result_cost=300_00,
                                               logistic_price=37_50,
                                               storage_price=22,
@@ -94,20 +97,20 @@ class EconomyAnalyzeTest(BaseCalcTest):
                                               absolute_transit_margin=3190_00,
                                               relative_transit_margin=0.10633333333333334,
                                               transit_roi=0.21266666666666667), result[0])
-        self.assertEqual(TransitEconomyResult(result_cost=525_53,
+        self.assertEqual(TransitEconomyResult(result_cost=1334_25,
                                               logistic_price=37_50,
                                               storage_price=22,
                                               purchase_cost=150_00,
-                                              marketplace_expanses=138_44,
-                                              absolute_margin=237_09,
-                                              relative_margin=0.4511445588263277,
-                                              roi=1.5806,
+                                              marketplace_expanses=275_92,
+                                              absolute_margin=908_33,
+                                              relative_margin=0.6807794641184186,
+                                              roi=6.055533333333333,
                                               purchase_investments=15000_00,
-                                              commercial_expanses=13844_00,
-                                              tax_expanses=3153_18,
-                                              absolute_transit_margin=20555_82,
-                                              relative_transit_margin=0.3911445588263277,
-                                              transit_roi=1.370388), result[1])
+                                              commercial_expanses=27592_00,
+                                              tax_expanses=8005_50,
+                                              absolute_transit_margin=82827_50,
+                                              relative_transit_margin=0.6207794641184186,
+                                              transit_roi=5.521833333333333), result[1])
 
 
 if __name__ == '__main__':
