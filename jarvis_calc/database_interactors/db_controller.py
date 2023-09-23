@@ -7,6 +7,21 @@ from jorm.market.service import SimpleEconomySaveObject, TransitEconomySaveObjec
 from jorm.server.token.types import TokenType
 from jorm.support.types import EconomyConstants
 
+_DEFAULT_ECONOMY_CONSTANTS = EconomyConstants(
+    max_mass=25,
+    max_side_sum=200,
+    max_side_length=120,
+    max_standard_volume_in_liters=5,
+    return_price=50_00,
+    oversize_logistic_price=1000_00,
+    oversize_storage_price=2_157,
+    standard_warehouse_logistic_price=50_00,
+    standard_warehouse_storage_price=30,
+    nds_tax=0.20,
+    commercial_tax=0.15,
+    self_employed_tax=0.06,
+)
+
 
 class DBController:
     def __init__(self, user_info_collector: UserInfoCollector, jorm_collector: JORMCollector,
@@ -73,8 +88,11 @@ class DBController:
     def load_user_warehouse(self, user_id: int, marketplace_id: int) -> list[Warehouse]:
         return self.__jorm_changer.load_user_warehouse(user_id, marketplace_id)
 
-    def get_economy_constants(self, marketplace_id: int) -> EconomyConstants | None:
-        return self.__jorm_collector.get_economy_constants(marketplace_id)
+    def get_economy_constants(self, marketplace_id: int) -> EconomyConstants:
+        found = self.__jorm_collector.get_economy_constants(marketplace_id)
+        if found is not None:
+            return found
+        return _DEFAULT_ECONOMY_CONSTANTS
 
     def get_user_by_account(self, account: Account) -> User:
         return self.__user_info_collector.get_user_by_account(account)
