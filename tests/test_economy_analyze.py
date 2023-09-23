@@ -80,7 +80,7 @@ class EconomyAnalyzeTest(BaseCalcTest):
 
                 logistic_count=100,
                 logistic_price=5000_00,
-                transit_cost_for_cubic_meter=10_00
+                transit_cost_for_cubic_meter=100_00
             ),
             niche, client, warehouse, green_zone_result)
         self.assertEqual(TransitEconomyResult(result_cost=300_00,
@@ -92,11 +92,11 @@ class EconomyAnalyzeTest(BaseCalcTest):
                                               relative_margin=0.16633333333333333,
                                               roi=0.33266666666666667,
                                               purchase_investments=15000_00,
-                                              commercial_expanses=10010_00,
+                                              commercial_expanses=10011_00,
                                               tax_expanses=1800_00,
-                                              absolute_transit_margin=3190_00,
-                                              relative_transit_margin=0.10633333333333334,
-                                              transit_roi=0.21266666666666667), result[0])
+                                              absolute_transit_margin=3189_00,
+                                              relative_transit_margin=0.1063,
+                                              transit_roi=0.2126), result[0])
         self.assertEqual(TransitEconomyResult(result_cost=1334_25,
                                               logistic_price=37_50,
                                               storage_price=22,
@@ -106,11 +106,11 @@ class EconomyAnalyzeTest(BaseCalcTest):
                                               relative_margin=0.6807794641184186,
                                               roi=6.055533333333333,
                                               purchase_investments=15000_00,
-                                              commercial_expanses=27592_00,
+                                              commercial_expanses=27593_00,
                                               tax_expanses=8005_50,
-                                              absolute_transit_margin=82827_50,
-                                              relative_transit_margin=0.6207794641184186,
-                                              transit_roi=5.521833333333333), result[1])
+                                              absolute_transit_margin=82826_50,
+                                              relative_transit_margin=0.6207719692711261,
+                                              transit_roi=5.521766666666666), result[1])
 
 
 if __name__ == '__main__':

@@ -117,7 +117,7 @@ class SimpleEconomyCalculator(Calculator):
         is_oversize: bool = self.__is_oversize(data)
         if is_oversize:
             return self.economy_constants.oversize_logistic_price
-        volume: float = self.__calc_volume_in_liters(data)
+        volume: float = self.calc_volume_in_liters(data)
         if volume <= self.economy_constants.max_standard_volume_in_liters:
             return int(warehouse.main_coefficient * self.economy_constants.standard_warehouse_logistic_price)
         over_standard_volume = volume - self.economy_constants.max_standard_volume_in_liters
@@ -131,7 +131,7 @@ class SimpleEconomyCalculator(Calculator):
         is_oversize: bool = self.__is_oversize(data)
         if is_oversize:
             return self.economy_constants.oversize_storage_price
-        volume: float = self.__calc_volume_in_liters(data)
+        volume: float = self.calc_volume_in_liters(data)
         if volume <= self.economy_constants.max_standard_volume_in_liters:
             return int(warehouse.main_coefficient * self.economy_constants.standard_warehouse_storage_price)
         over_standard_volume = volume - self.economy_constants.max_standard_volume_in_liters
@@ -152,7 +152,7 @@ class SimpleEconomyCalculator(Calculator):
                 or data.height > self.economy_constants.max_side_length)
 
     @staticmethod
-    def __calc_volume_in_liters(data: SimpleEconomyCalculateData) -> float:
+    def calc_volume_in_liters(data: SimpleEconomyCalculateData) -> float:
         return data.length * data.width * data.height * 0.001
 
 
@@ -239,8 +239,10 @@ class TransitEconomyCalculator(Calculator):
 
     @staticmethod
     def __calc_commercial_expanses(simple_result: SimpleEconomyResult, data: TransitEconomyCalculateData) -> int:
+        transit_volume_in_cubic_meters = SimpleEconomyCalculator.calc_volume_in_liters(data) / 1000
         return int(
             data.logistic_count * simple_result.marketplace_expanses
+            + data.transit_cost_for_cubic_meter * transit_volume_in_cubic_meters
         )
 
     @staticmethod
