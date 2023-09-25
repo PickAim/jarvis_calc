@@ -71,15 +71,16 @@ class SimpleEconomyCalculator(Calculator):
     @staticmethod
     def __get_recommended_cost(green_zone_result: GreenTradeZoneCalculateResult) -> int:
         best_segment = green_zone_result.segments[green_zone_result.best_segment_idx]
-        return int(sum(best_segment) / len(best_segment))
+        return 0 if len(best_segment) == 0 else int(sum(best_segment) / len(best_segment))
 
     def __calc_roi(self, data: SimpleEconomyCalculateData, niche: Niche, target_warehouse: Warehouse) -> float:
         purchase_cost: int = self.__calc_purchase_cost(data)
-        return self.__calc_absolute_margin(data, niche, target_warehouse) / purchase_cost
+        return 0 if purchase_cost == 0 else self.__calc_absolute_margin(data, niche, target_warehouse) / purchase_cost
 
     def __calc_relative_margin(self, data: SimpleEconomyCalculateData, niche: Niche,
                                target_warehouse: Warehouse) -> float:
-        return self.__calc_absolute_margin(data, niche, target_warehouse) / data.product_exist_cost
+        return 0 if data.product_exist_cost == 0 \
+            else self.__calc_absolute_margin(data, niche, target_warehouse) / data.product_exist_cost
 
     def __calc_absolute_margin(self, data: SimpleEconomyCalculateData, niche: Niche,
                                target_warehouse: Warehouse) -> int:
@@ -108,9 +109,9 @@ class SimpleEconomyCalculator(Calculator):
     def __calc_purchase_cost(data: SimpleEconomyCalculateData) -> int:
         cost_price = data.cost_price
         if isinstance(data, TransitEconomyCalculateData):
-            transit_price = data.logistic_price
-            transit_count = data.logistic_count
-            return int(cost_price + transit_price / transit_count)
+            logistic_price = data.logistic_price
+            logistic_count = data.logistic_count
+            return 0 if logistic_count == 0 else int(cost_price + logistic_price / logistic_count)
         return cost_price
 
     def __calc_logistic_price(self, data: SimpleEconomyCalculateData, warehouse: Warehouse) -> int:
@@ -203,12 +204,12 @@ class TransitEconomyCalculator(Calculator):
         purchase_investments: int = self.__calc_purchase_investments(simple_result, data)
         absolute_transit_margin: int = self.__calc_absolute_transit_margin(simple_result,
                                                                            data, user)
-        return absolute_transit_margin / purchase_investments
+        return 0 if purchase_investments == 0 else absolute_transit_margin / purchase_investments
 
     def __calc_relative_transit_margin(self, simple_result: SimpleEconomyResult,
                                        data: TransitEconomyCalculateData, user: User) -> float:
-        return (self.__calc_absolute_transit_margin(simple_result, data, user)
-                / (simple_result.result_cost * data.logistic_count))
+        divisor = (simple_result.result_cost * data.logistic_count)
+        return 0 if divisor == 0 else (self.__calc_absolute_transit_margin(simple_result, data, user) / divisor)
 
     def __calc_absolute_transit_margin(self, simple_result: SimpleEconomyResult,
                                        data: TransitEconomyCalculateData, user: User) -> int:

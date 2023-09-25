@@ -18,8 +18,9 @@ class DownturnCalculator(Calculator):
                     warehouse_id_to_downturn_days[warehouse_id] = {}
                 for specify in downturns[warehouse_id]:
                     if specify in all_leftovers[warehouse_id]:
-                        mean_downturn = \
-                            abs(downturns[warehouse_id][specify].sum // downturns[warehouse_id][specify].count)
+                        mean_downturn = (0 if downturns[warehouse_id][specify].count == 0
+                                         else abs(downturns[warehouse_id][specify].sum
+                                                  // downturns[warehouse_id][specify].count))
                         warehouse_id_to_downturn_days[warehouse_id][specify] = \
                             all_leftovers[warehouse_id][specify] // mean_downturn if mean_downturn > 0 else -1
                     else:

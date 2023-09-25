@@ -34,7 +34,7 @@ class NicheHistWithNCalculator(Calculator):
         clear_frequency = np.array([x for x in lst if x != 0])
         for freq in clear_frequency:
             result += freq
-        return int(result / len(clear_frequency))
+        return 0 if len(clear_frequency) == 0 else int(result / len(clear_frequency))
 
 
 class NicheCharacteristicsCalculator(Calculator):
@@ -71,8 +71,8 @@ class NicheCharacteristicsCalculator(Calculator):
             daily_mean_trade_count=int(result_products_trade_count / DAYS_IN_MONTH),
             mean_traded_card_cost=0 if result_products_trade_count == 0 else int(
                 result_overall_profit / result_products_trade_count),
-            month_mean_niche_profit_per_card=0 if result_card_count == 0 else int(
-                result_overall_profit / result_card_count),
+            month_mean_niche_profit_per_card=(0 if result_card_count == 0
+                                              else int(result_overall_profit / result_card_count)),
             monopoly_percent=0 if result_overall_profit == 0 else top_100_profit / result_overall_profit,
             maximum_profit_idx=max_idx
         )

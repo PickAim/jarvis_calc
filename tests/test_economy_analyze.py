@@ -112,6 +112,41 @@ class EconomyAnalyzeTest(BaseCalcTest):
                                               relative_transit_margin=0.6207719692711261,
                                               transit_roi=5.521766666666666), result[1])
 
+    def test_zero_division_fix_in_unit_economy_calc(self):
+        calculator = TransitEconomyCalculator(ECONOMY_CONSTANT)
+        niche: Niche = self.create_test_niche()
+        green_zone_result = GreenTradeZoneCalculator().calculate(niche)
+        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
+        client = User(name="client", privilege=UserPrivilege.BASIC, profit_tax=0.06)
+        result = calculator.calculate(
+            TransitEconomyCalculateData(
+                product_exist_cost=0,
+                cost_price=0,
+                length=0,
+                width=0,
+                height=0,
+                mass=0,
+
+                logistic_count=0,
+                logistic_price=0,
+                transit_cost_for_cubic_meter=0
+            ),
+            niche, client, warehouse, green_zone_result)
+        self.assertEqual(TransitEconomyResult(result_cost=0,
+                                              logistic_price=25_00,
+                                              storage_price=15,
+                                              purchase_cost=0,
+                                              marketplace_expanses=34_50,
+                                              absolute_margin=-34_50,
+                                              relative_margin=0,
+                                              roi=0,
+                                              purchase_investments=0,
+                                              commercial_expanses=0,
+                                              tax_expanses=0,
+                                              absolute_transit_margin=0,
+                                              relative_transit_margin=0,
+                                              transit_roi=0), result[0])
+
 
 if __name__ == '__main__':
     unittest.main()
