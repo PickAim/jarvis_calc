@@ -11,7 +11,7 @@ from tests.base_test import BaseCalcTest
 class NicheAnalyzeTest(BaseCalcTest):
     def test_only_freq_calc_with_jorm(self):
         niche: Niche = self.create_test_niche()
-        x, y = NicheHistCalculator.calculate(niche)
+        x, y = NicheHistCalculator().calculate(niche)
         self.assertEqual(10, len(x))
 
     def test_mean_concurrent_cost_calc_with_niche(self):
@@ -24,7 +24,7 @@ class NicheAnalyzeTest(BaseCalcTest):
 
     def test_niche_analyze_parameters(self):
         niche: Niche = self.create_test_niche()
-        result = NicheCharacteristicsCalculator.calculate(niche)
+        result = NicheCharacteristicsCalculator().calculate(niche)
         self.assertEqual(NicheCharacteristicsCalculateResult(
             card_count=4114,
             niche_profit=7558992306,
@@ -40,7 +40,7 @@ class NicheAnalyzeTest(BaseCalcTest):
 
     def test_green_zone(self):
         niche: Niche = self.create_test_niche()
-        result = GreenTradeZoneCalculator.calculate(niche)
+        result = GreenTradeZoneCalculator().calculate(niche)
         # self.draw_green_zone_result(result) # uncomment if you need draw results
         self.assertEqual([(3300, 263550),
                           (263550, 523800),
