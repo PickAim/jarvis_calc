@@ -106,11 +106,14 @@ class DBController:
             return account_and_id[0]
         return None
 
-    def get_niche(self, niche_name: str, category_id: int, marketplace_id: int) -> Niche:
+    def get_niche(self, niche_name: str, category_id: int, marketplace_id: int) -> Niche | None:
         return self.__jorm_collector.get_niche(niche_name, category_id, marketplace_id)
 
-    def get_niche_by_id(self, niche_id: int) -> Niche:
+    def get_niche_by_id(self, niche_id: int) -> Niche | None:
         return self.__jorm_collector.get_niche_by_id(niche_id)
+
+    def get_niche_without_history(self, niche_id: int) -> Niche | None:
+        return self.__jorm_collector.get_niche_without_history(niche_id)
 
     def get_warehouse(self, warehouse_id: int) -> Warehouse:
         return self.__jorm_collector.get_warehouse(warehouse_id)
