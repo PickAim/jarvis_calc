@@ -31,11 +31,17 @@ ECONOMY_CONSTANT = EconomyConstants(
 
 
 class EconomyAnalyzeTest(BaseCalcTest):
+
+    @staticmethod
+    def __create_empty_address() -> Address:
+        return Address("", "")
+
     def test_unit_economy_calc(self):
         calculator = SimpleEconomyCalculator(ECONOMY_CONSTANT)
         niche: Niche = self.create_test_niche()
         green_zone_result = GreenTradeZoneCalculator().calculate(niche)
-        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
+        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, self.__create_empty_address(),
+                              main_coefficient=0.5, products=[])
         result = calculator.calculate(
             SimpleEconomyCalculateData(
                 product_exist_cost=300_00,
@@ -67,7 +73,8 @@ class EconomyAnalyzeTest(BaseCalcTest):
         calculator = TransitEconomyCalculator(ECONOMY_CONSTANT)
         niche: Niche = self.create_test_niche()
         green_zone_result = GreenTradeZoneCalculator().calculate(niche)
-        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
+        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, self.__create_empty_address(),
+                              main_coefficient=0.5, products=[])
         client = User(name="client", privilege=UserPrivilege.BASIC, profit_tax=0.06)
         result = calculator.calculate(
             TransitEconomyCalculateData(
@@ -116,7 +123,8 @@ class EconomyAnalyzeTest(BaseCalcTest):
         calculator = TransitEconomyCalculator(ECONOMY_CONSTANT)
         niche: Niche = self.create_test_niche()
         green_zone_result = GreenTradeZoneCalculator().calculate(niche)
-        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, Address(), main_coefficient=0.5, products=[])
+        warehouse = Warehouse("warehouse", 1, HandlerType.MARKETPLACE, self.__create_empty_address(),
+                              main_coefficient=0.5, products=[])
         client = User(name="client", privilege=UserPrivilege.BASIC, profit_tax=0.06)
         result = calculator.calculate(
             TransitEconomyCalculateData(
