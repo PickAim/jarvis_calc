@@ -1,10 +1,18 @@
 import datetime as date_root
+from dataclasses import dataclass
 from datetime import datetime
 
 from jorm.market.items import Product, ProductHistoryUnit
 from jorm.support.constants import DAYS_IN_MONTH
+from jorm.support.types import DownturnSumCount, DownturnMap
 
 from jarvis_calc.calculators.calculator_base import Calculator
+
+
+@dataclass
+class DownturnInfo:
+    leftover: int
+    days: int
 
 
 class DownturnCalculator(Calculator):
@@ -13,19 +21,34 @@ class DownturnCalculator(Calculator):
         all_leftovers = product.history.get_all_mapped_leftovers()
         downturns = product.history.get_leftovers_downturn(from_date)
         for warehouse_id in downturns:
-            if warehouse_id in all_leftovers:
-                if warehouse_id not in warehouse_id_to_downturn_days:
-                    warehouse_id_to_downturn_days[warehouse_id] = {}
-                for specify in downturns[warehouse_id]:
-                    if specify in all_leftovers[warehouse_id]:
-                        mean_downturn = (0 if downturns[warehouse_id][specify].count == 0
-                                         else abs(downturns[warehouse_id][specify].sum
-                                                  // downturns[warehouse_id][specify].count))
-                        warehouse_id_to_downturn_days[warehouse_id][specify] = \
-                            all_leftovers[warehouse_id][specify] // mean_downturn if mean_downturn > 0 else -1
-                    else:
-                        warehouse_id_to_downturn_days[warehouse_id][specify] = 0
+            if warehouse_id not in all_leftovers:
+                continue
+            if warehouse_id not in warehouse_id_to_downturn_days:
+                warehouse_id_to_downturn_days[warehouse_id] = {}
+            self.__fill_downturn_dict(warehouse_id, all_leftovers,
+                                      downturns, warehouse_id_to_downturn_days[warehouse_id])
         return warehouse_id_to_downturn_days
+
+    def __fill_downturn_dict(self, warehouse_id: int,
+                             all_leftovers: dict[int, dict[str, int]],
+                             downturns: dict[int, DownturnMap],
+                             specify_to_downturn_days: dict[str, int]):
+        specify_to_leftover = all_leftovers[warehouse_id]
+        specify_to_downturn_map = downturns[warehouse_id]
+        for specify in specify_to_downturn_map:
+            if specify in specify_to_leftover:
+                specify_to_downturn_days[specify] = (
+                    self.__calc_downturn_days(specify_to_downturn_map[specify],
+                                              specify_to_leftover[specify])
+                )
+            else:
+                specify_to_downturn_days[specify] = 0
+
+    @staticmethod
+    def __calc_downturn_days(downturn_sum_count: DownturnSumCount, leftovers: int) -> int:
+        mean_downturn = (0 if downturn_sum_count.count == 0
+                         else abs(downturn_sum_count.sum // downturn_sum_count.count))
+        return leftovers // mean_downturn if mean_downturn > 0 else -1
 
 
 class TurnoverCalculator(Calculator):
