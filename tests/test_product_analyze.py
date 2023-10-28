@@ -3,7 +3,7 @@ from datetime import datetime
 
 from jorm.market.items import Product
 
-from jarvis_calc.calculators.product_analyze import DownturnCalculator, TurnoverCalculator
+from jarvis_calc.calculators.product_analyze import DownturnCalculator, TurnoverCalculator, DownturnInfo
 from tests.base_test import BaseCalcTest
 
 
@@ -14,14 +14,14 @@ class ProductAnalyzeTest(BaseCalcTest):
         downturn = DownturnCalculator().calculate(product, datetime.utcnow())
         self.assertEqual({
             123: {
-                's': 0,
-                'l': 4,
-                'p': -1
+                's': DownturnInfo(leftover=0, days=-1),
+                'l': DownturnInfo(leftover=20, days=4),
+                'p': DownturnInfo(leftover=35, days=-2)
             },
             321: {
-                's': 0,
-                'l': -1,
-                'p': 6
+                's': DownturnInfo(leftover=0, days=-1),
+                'l': DownturnInfo(leftover=25, days=-2),
+                'p': DownturnInfo(leftover=30, days=6)
             }
         }, downturn)
 

@@ -11,13 +11,14 @@ from jarvis_calc.calculators.calculator_base import Calculator
 
 @dataclass
 class DownturnInfo:
+    #  TODO think about flags for unknown or infinite values
     leftover: int
     days: int
 
 
 class DownturnCalculator(Calculator):
-    def calculate(self, product: Product, from_date) -> dict[int, dict[str, int]]:
-        warehouse_id_to_downturn_days: dict[int, dict[str, int]] = {}
+    def calculate(self, product: Product, from_date) -> dict[int, dict[str, DownturnInfo]]:
+        warehouse_id_to_downturn_days: dict[int, dict[str, DownturnInfo]] = {}
         all_leftovers = product.history.get_all_mapped_leftovers()
         downturns = product.history.get_leftovers_downturn(from_date)
         for warehouse_id in downturns:
@@ -32,23 +33,23 @@ class DownturnCalculator(Calculator):
     def __fill_downturn_dict(self, warehouse_id: int,
                              all_leftovers: dict[int, dict[str, int]],
                              downturns: dict[int, DownturnMap],
-                             specify_to_downturn_days: dict[str, int]):
+                             specify_to_downturn_days: dict[str, DownturnInfo]):
         specify_to_leftover = all_leftovers[warehouse_id]
         specify_to_downturn_map = downturns[warehouse_id]
         for specify in specify_to_downturn_map:
             if specify in specify_to_leftover:
-                specify_to_downturn_days[specify] = (
-                    self.__calc_downturn_days(specify_to_downturn_map[specify],
-                                              specify_to_leftover[specify])
-                )
+                downturn_info = DownturnInfo(specify_to_leftover[specify],
+                                             self.__calc_downturn_days(specify_to_downturn_map[specify],
+                                                                       specify_to_leftover[specify]))
+                specify_to_downturn_days[specify] = downturn_info
             else:
-                specify_to_downturn_days[specify] = 0
+                specify_to_downturn_days[specify] = DownturnInfo(0, -1)
 
     @staticmethod
     def __calc_downturn_days(downturn_sum_count: DownturnSumCount, leftovers: int) -> int:
         mean_downturn = (0 if downturn_sum_count.count == 0
                          else abs(downturn_sum_count.sum // downturn_sum_count.count))
-        return leftovers // mean_downturn if mean_downturn > 0 else -1
+        return leftovers // mean_downturn if mean_downturn > 0 else -2
 
 
 class TurnoverCalculator(Calculator):
