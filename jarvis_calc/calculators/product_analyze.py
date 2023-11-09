@@ -11,7 +11,6 @@ from jarvis_calc.calculators.calculator_base import Calculator
 
 @dataclass
 class DownturnInfo:
-    #  TODO think about flags for unknown or infinite values
     leftover: int
     days: int
 
@@ -43,13 +42,13 @@ class DownturnCalculator(Calculator):
                                                                        specify_to_leftover[specify]))
                 specify_to_downturn_days[specify] = downturn_info
             else:
-                specify_to_downturn_days[specify] = DownturnInfo(0, -1)
+                specify_to_downturn_days[specify] = DownturnInfo(0, 0)
 
     @staticmethod
     def __calc_downturn_days(downturn_sum_count: DownturnSumCount, leftovers: int) -> int:
         mean_downturn = (0 if downturn_sum_count.count == 0
                          else abs(downturn_sum_count.sum // downturn_sum_count.count))
-        return leftovers // mean_downturn if mean_downturn > 0 else -2
+        return leftovers // mean_downturn if mean_downturn > 0 else -1
 
 
 class TurnoverCalculator(Calculator):

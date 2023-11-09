@@ -14,13 +14,13 @@ class ProductAnalyzeTest(BaseCalcTest):
         downturn = DownturnCalculator().calculate(product, datetime.utcnow())
         self.assertEqual({
             123: {
-                's': DownturnInfo(leftover=0, days=-1),
+                's': DownturnInfo(leftover=0, days=0),
                 'l': DownturnInfo(leftover=20, days=4),
-                'p': DownturnInfo(leftover=35, days=-2)
+                'p': DownturnInfo(leftover=35, days=-1)
             },
             321: {
-                's': DownturnInfo(leftover=0, days=-1),
-                'l': DownturnInfo(leftover=25, days=-2),
+                's': DownturnInfo(leftover=0, days=0),
+                'l': DownturnInfo(leftover=25, days=-1),
                 'p': DownturnInfo(leftover=30, days=6)
             }
         }, downturn)
