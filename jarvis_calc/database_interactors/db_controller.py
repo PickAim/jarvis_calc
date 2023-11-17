@@ -86,7 +86,7 @@ class DBController:
         return self.__jorm_changer.load_user_products(user_id, marketplace_id)
 
     def load_user_warehouse(self, user_id: int, marketplace_id: int) -> list[Warehouse]:
-        return self.__jorm_changer.load_user_warehouse(user_id, marketplace_id)
+        return self.__jorm_changer.load_user_warehouses(user_id, marketplace_id)
 
     def get_economy_constants(self, marketplace_id: int) -> EconomyConstants:
         found = self.__jorm_collector.get_economy_constants(marketplace_id)
