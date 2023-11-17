@@ -34,7 +34,7 @@ class EconomyAnalyzeTest(BaseCalcTest):
 
     @staticmethod
     def __create_empty_address() -> Address:
-        return Address()
+        return Address("", "")
 
     def test_unit_economy_calc(self):
         calculator = SimpleEconomyCalculator(ECONOMY_CONSTANT)
