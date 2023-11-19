@@ -1,6 +1,7 @@
 import datetime as date_root
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Iterable
 
 from jorm.market.items import Product, ProductHistoryUnit
 from jorm.support.constants import DAYS_IN_MONTH
@@ -98,3 +99,69 @@ class TurnoverCalculator(Calculator):
             if history[i].unit_date < date_to_stop:
                 return history[i]
         return history[0]
+
+
+class KeywordsCalculator(Calculator):
+    good_match: float = 5.0
+    intermediate_match: float = 2.5
+    poor_match: float = 1.0
+
+    def calculate(self, main_sentence: str, related_words: Iterable[str]):
+        scored_dict: dict[float, list[str]] = self.score_object_names(main_sentence, related_words)
+        result: list[str] = []
+        for score in scored_dict.keys():
+            result.extend(self.sort_by_len_alphabet(scored_dict[score]))
+        return result
+
+    @staticmethod
+    def sort_by_len_alphabet(names: list[str]) -> list[str]:
+        length_dict: dict[int, list[str]] = {}
+        for name in names:
+            if len(name) not in length_dict:
+                length_dict[len(name)] = [name]
+                continue
+            length_dict[len(name)].append(name)
+        sorted_tuples: list = sorted(length_dict.items())
+        result: list[str] = []
+        for length_tuple in sorted_tuples:
+            result.extend(sorted(length_tuple[1]))
+        return result
+
+    def score_object_names(self, sentence_to_search: str, candidates: Iterable[str]) -> dict[float, list[str]]:
+        sentence_to_search = sentence_to_search.lower()
+        searched_words = []
+        if len(sentence_to_search) > 1:
+            searched_words: list[str] = sentence_to_search.split(" ")
+            if len(searched_words) == 1:
+                mid_idx: int = len(sentence_to_search) // 2
+                searched_words = [sentence_to_search[:mid_idx], sentence_to_search[mid_idx:]]
+        lower_names: list[str] = [lower_name.lower() for lower_name in candidates]
+        result: dict[float, list[str]] = {
+            self.good_match: [],
+            self.intermediate_match: [],
+            self.poor_match: []
+        }
+        for name in lower_names:
+            words: list[str] = [word + " " for word in name.split(" ")]
+            if sentence_to_search + " " in words[: len(words) // 2] \
+                    or sentence_to_search + " " in words and len(words) < 3:
+                result[self.good_match].append(name)
+                continue
+            flag: bool = False
+            for word_to_match in searched_words:
+                if self.any_contains(word_to_match, words):
+                    result[self.intermediate_match].append(name)
+                    flag = True
+                    break
+            if flag:
+                continue
+            result[self.poor_match].append(name)
+        return result
+
+    @staticmethod
+    def any_contains(text_to_search: str, words: list[str]) -> bool:
+        sentence: str = "".join(words)
+        for word in words:
+            if text_to_search in word and sentence.index(text_to_search) < len(sentence) // 2:
+                return True
+        return False
