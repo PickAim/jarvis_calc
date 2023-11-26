@@ -28,7 +28,23 @@ class DownturnCalculator(Calculator):
                 warehouse_id_to_downturn_days[warehouse_id] = {}
             self.__fill_downturn_dict(warehouse_id, all_leftovers,
                                       downturns, warehouse_id_to_downturn_days[warehouse_id])
+        if not warehouse_id_to_downturn_days:
+            return self.__calc_simple_downturns(product)
         return warehouse_id_to_downturn_days
+
+    @staticmethod
+    def __calc_simple_downturns(product: Product) -> dict[int, dict[str, DownturnInfo]]:
+        leftover = product.history.get_history()[-1].leftover
+        if not leftover:
+            return {-1: {'default': DownturnInfo(0, 0)}}
+        result = {}
+        for warehouse_id in leftover:
+            if warehouse_id not in result:
+                result[warehouse_id] = {}
+            specified_leftovers = leftover[warehouse_id]
+            for specified_leftover in specified_leftovers:
+                result[warehouse_id][specified_leftover.specify] = DownturnInfo(specified_leftover.leftover, -1)
+        return result
 
     def __fill_downturn_dict(self, warehouse_id: int,
                              all_leftovers: dict[int, dict[str, int]],
