@@ -50,14 +50,15 @@ class NicheCharacteristicsCalculator(Calculator):
         freq_keys, _ = NicheHistWithNCalculator().calculate(niche.cost_data, 10)
         trade_profits = self.__calculate_trade_profits(niche.products, freq_keys)
         max_idx = 0 if len(trade_profits) == 0 else int(np.argmax(trade_profits))
-        for product in niche.products:
+        for i in range(len(niche.products)):
+            product = niche.products[i]
             product_trade_count = product.history.get_last_month_trade_count()
             rating_count += product.rating
             if product_trade_count > 0:
                 result_products_with_trades_count += 1
                 result_products_trade_count += product_trade_count
                 traded_products_profit += product_trade_count * product.cost
-                if niche.name in product.top_places and product.top_places[niche.name] <= 100:
+                if i <= 100:
                     top_100_profit += product_trade_count * product.cost
 
         result_overall_profit = traded_products_profit
